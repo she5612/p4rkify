@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parkify - Choose Floor</title>
+    <link rel="stylesheet" href="../css/chooseFloor.css">
+</head>
+<body>
+    <div class="centered-wrapper">
+        <header class="app-header">
+            <h1>MARKET PARKING AREA 🅿️</h1> 
+            <p>Tap a floor to check available spots and reserve.</p>
+        </header>
+        
+        <div id="floorsContainer" class="floors-grid">
+            </div>
+    </div>
+
+<script type="module">
+console.log("ChooseFloor.js loaded!");
+
+// Firebase imports
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { firebaseConfig } from "../js/index.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const floorsContainer = document.getElementById("floorsContainer");
+
+async function renderFloors() {
+  floorsContainer.innerHTML = '';
+
+  try {
+    const floorsSnapshot = await getDocs(collection(db, "parkingSlots"));
+
+    if (floorsSnapshot.empty) {
+      floorsContainer.innerHTML = "<p>No floors available.</p>";
+      return;
+    }
+
+    for (const floorDoc of floorsSnapshot.docs) {
+      const floorName = floorDoc.id; // Floor1, Floor2, etc.
+      const slotsRef = collection(db, "parkingSlots", floorName, "slots");
+      const slotsSnapshot = await getDocs(slotsRef);
+
+      // Debug: show all slot statuses
+      console.log(`Slots for ${floorName}:`);
+      slotsSnapshot.docs.forEach(doc => console.log(doc.id, doc.data().status));
+
+      // Count available slots (case-insensitive, trim spaces)
+      const availableCount = slotsSnapshot.docs.filter(doc => {
+        const status = doc.data().status;
+        return status && status.toLowerCase().trim() === "available";
+      }).length;
+
+      // Determine card color
+      let cardClass = "floor-card";
+      if (availableCount === 0) cardClass += " full"; // red for full
+      else if (availableCount < slotsSnapshot.docs.length) cardClass += " partial"; // yellow if some reserved
+
+      // Create card
+      const cardDiv = document.createElement("div");
+      cardDiv.className = cardClass;
+      cardDiv.innerHTML = `
+        <h2>${floorName}</h2>
+        <p>${availableCount > 0 ? availableCount + " Spots Available" : "Full"}</p>
+        <button ${availableCount === 0 ? "disabled" : ""}>Reserve Now</button>
+      `;
+
+      // Click handler
+      const button = cardDiv.querySelector("button");
+      if (availableCount > 0) {
+        button.addEventListener("click", () => {
+          localStorage.setItem("selectedFloor", floorName);
+          window.location.href = floorName.toLowerCase() + ".html"; // floor1.html
+        });
+      }
+
+      floorsContainer.appendChild(cardDiv);
+    }
+
+  } catch (error) {
+    console.error("Error fetching floors:", error);
+    floorsContainer.innerHTML = "<p>Failed to load floors.</p>";
+  }
+}
+
+renderFloors();
+</script>
+</body>
+</html>

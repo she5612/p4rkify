@@ -6,7 +6,7 @@ import {
   serverTimestamp 
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyDWoFHHXKxEMBk-ZhZgYstPV6fylL8SLiE",
   authDomain: "parkifycapstone.firebaseapp.com",
   projectId: "parkifycapstone",
@@ -16,31 +16,59 @@ const firebaseConfig = {
   measurementId: "G-5NCE2MM3PM"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const userForm = document.getElementById("userForm");
+document.addEventListener("DOMContentLoaded", () => {
+  const userForm = document.getElementById("userForm");
 
-userForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const fullName = document.getElementById("fullName").value;
-  const carModel = document.getElementById("carModel").value;
-  const plateNumber = document.getElementById("plateNumber").value;
-
-  try {
-    await addDoc(collection(db, "users"), {
-      fullName: fullName,
-      carModel: carModel,
-      plateNumber: plateNumber,
-      lastReservation: serverTimestamp()
-    });
-
-    // Redirect to choose floor
-    window.location.href = "chooseFloor.html";
-
-  } catch (error) {
-    console.error("Error saving user:", error);
-    alert("Failed to save your information. Please try again.");
+  if (!userForm) {
+    console.error("userForm not found in the DOM");
+    return;
   }
+
+  userForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const fullName = document.getElementById("fullName").value.trim();
+    const carModel = document.getElementById("carModel").value.trim();
+    const plateNumber = document.getElementById("plateNumber").value.trim();
+
+    if (!fullName || !carModel || !plateNumber) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    try {
+      // Save user data
+      const userRef = await addDoc(collection(db, "users"), {
+        fullName,
+        carModel,
+        plateNumber,
+        lastReservation: serverTimestamp()
+      });
+
+      console.log("User saved with ID:", userRef.id);
+
+      // Save log (optional at this stage)
+      await addDoc(collection(db, "logs"), {
+        action: "entered",
+        details: `${fullName} entered the system`,
+        timestamp: serverTimestamp(),
+        userID: userRef.id
+      });
+
+      // Store userID locally to use in floor/slot reservation
+      localStorage.setItem("userID", userRef.id);
+      localStorage.setItem("userName", fullName);
+
+      // Redirect to chooseFloor.html
+      window.location.href = "../html/chooseFloor.html";
+
+    } catch (error) {
+      console.error("Error saving user:", error);
+      alert("Failed to save your information. Please try again.");
+    }
+  });
 });

@@ -1,0 +1,238 @@
+/* Import a modern, clean font */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+
+/* --- Root Variables for Glassmorphism --- */
+:root {
+    --primary-color: #00bcd4; /* Cyan/Turquoise */
+    --accent-color: #4db6ac; /* Muted Green/Teal */
+    --background-start: #3f51b5; /* Deep Indigo */
+    --background-end: #00bcd4; /* Cyan */
+    --text-light: #f0f0f0;
+
+    --status-available: #4CAF50; /* Green */
+    --status-partial: #FFB300; /* Amber */
+    --status-full: #F44336; /* Red */
+}
+
+/* --- Base & Background --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Apply Glassmorphism Gradient Background */
+    background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+    color: var(--text-light);
+    padding: 20px 10px;
+    overflow-x: hidden;
+}
+
+/* Background Blurs (Aesthetic) */
+body::before, body::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+}
+
+body::before {
+    top: 5%;
+    left: 10%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+body::after {
+    bottom: 5%;
+    right: 10%;
+    width: 250px;
+    height: 250px;
+    background: rgba(0, 188, 212, 0.3);
+}
+
+.centered-wrapper {
+    width: 95%;
+    max-width: 700px;
+    position: relative;
+    z-index: 10;
+}
+
+/* --- Header Styling --- */
+.app-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-top: 10px;
+}
+
+h1 {
+    font-size: 2.2rem;
+    color: var(--text-light);
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    margin-bottom: 5px;
+    letter-spacing: 0.5px;
+}
+
+.app-header p {
+    font-size: 1rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* --- Floor Cards Grid --- */
+.floors-grid {
+    display: grid;
+    /* Responsive: 1 column on small screens, 2 on larger */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
+    gap: 20px;
+}
+
+/* --- Individual Floor Card (Glassmorphism) --- */
+.floor-card {
+    position: relative;
+    z-index: 5;
+    padding: 20px;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    min-height: 150px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    /* Glassmorphism base styles */
+    background: rgba(255, 255, 255, 0.1); 
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+    border-left: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.floor-card:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+}
+
+.floor-card h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    color: var(--text-light);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.floor-card p {
+    font-size: 1rem;
+    font-weight: 300;
+    margin-bottom: 15px;
+    /* This will be colored by the status dot */
+}
+
+/* --- Status Dot (Aesthetic Indicator) --- */
+.floor-card h2::before {
+    content: '';
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* --- Status Coloring --- */
+
+/* Default/Available (Green Dot, Clear Background) */
+.floor-card h2::before {
+    background-color: var(--status-available);
+    box-shadow: 0 0 5px var(--status-available);
+}
+
+/* Partial (Yellow Dot, Slight Tint) */
+.floor-card.partial {
+    background: rgba(255, 179, 0, 0.08); /* Slight yellow tint */
+}
+.floor-card.partial h2::before {
+    background-color: var(--status-partial);
+    box-shadow: 0 0 5px var(--status-partial);
+}
+
+/* Full (Red Dot, Red Tint) */
+.floor-card.full {
+    background: rgba(244, 67, 54, 0.1); /* Slight red tint */
+    cursor: not-allowed;
+}
+.floor-card.full h2::before {
+    background-color: var(--status-full);
+    box-shadow: 0 0 5px var(--status-full);
+}
+.floor-card.full:hover {
+    transform: none; /* No movement if full */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+
+/* --- Button Styling --- */
+.floor-card button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: var(--accent-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.floor-card button:hover:not(:disabled) {
+    background-color: var(--primary-color);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.floor-card button:disabled {
+    background-color: rgba(255, 255, 255, 0.2); /* Glassy disabled look */
+    color: rgba(255, 255, 255, 0.5);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 600px) {
+    /* Stack cards vertically on small screens */
+    .floors-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .floor-card {
+        padding: 15px;
+        border-radius: 15px;
+        min-height: 120px;
+    }
+
+    .floor-card h2 {
+        font-size: 1.3rem;
+    }
+
+    .floor-card button {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        border-radius: 10px;
+    }
+}
