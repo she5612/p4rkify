@@ -1,0 +1,202 @@
+/* Import Google Fonts for a modern look */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+
+/* Base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+:root {
+    --primary-color: #00bcd4; /* Cyan/Turquoise for modern pop */
+    --secondary-color: #4db6ac; /* Muted Green/Teal */
+    --text-color: #333;
+    --light-text-color: #f0f0f0;
+    --background-start: #3f51b5; /* Deep Indigo */
+    --background-end: #00bcd4; /* Cyan */
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+    color: var(--text-color);
+    padding: 15px;
+    overflow-x: hidden; /* Crucial: Prevents horizontal scroll on mobile */
+}
+
+/* Background elements for visual depth */
+body::before {
+    content: '';
+    position: absolute;
+    top: 5%;
+    left: 10%;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    filter: blur(80px);
+}
+
+body::after {
+    content: '';
+    position: absolute;
+    bottom: 5%;
+    right: 10%;
+    width: 250px;
+    height: 250px;
+    background: rgba(0, 188, 212, 0.3);
+    border-radius: 50%;
+    filter: blur(100px);
+}
+
+/* Container with Glassmorphism */
+.container {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 450px;
+    padding: 35px 30px;
+    border-radius: 25px;
+
+    /* Glassmorphism Effect */
+    background: rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Heading */
+h1 {
+    font-size: 2rem;
+    color: var(--light-text-color);
+    margin-bottom: 30px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Form inputs */
+.user-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.input-group label {
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    color: var(--light-text-color);
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+input {
+    width: 100%;
+    padding: 15px 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--light-text-color);
+    font-size: 1rem;
+    font-weight: 400;
+    transition: all 0.4s ease;
+}
+
+input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+input:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 10px rgba(0, 188, 212, 0.6);
+}
+
+/* Button */
+.submit-btn {
+    width: 100%;
+    padding: 16px 0;
+    background: var(--secondary-color);
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+    margin-top: 10px;
+    /* Ensure text doesn't wrap oddly on small buttons */
+    white-space: nowrap;
+}
+
+.submit-btn:hover {
+    background: var(--primary-color);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.4);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Mobile Responsiveness Adjustments --- */
+
+/* Targets devices up to 480px wide (most small phones) */
+@media (max-width: 480px) {
+    /* 1. Body padding adjustment */
+    body {
+        /* Use less padding on the side so the content fills more of the screen */
+        padding: 10px;
+    }
+
+    /* 2. Container sizing and padding */
+    .container {
+        max-width: 100%; /* Ensure it uses full width on very small screens */
+        padding: 25px 18px; /* Slightly reduced vertical and horizontal padding */
+        border-radius: 15px; /* Softer edges for small screens */
+    }
+
+    /* 3. Heading size reduction */
+    h1 {
+        font-size: 1.7rem; /* Smaller, less overwhelming title */
+        margin-bottom: 20px;
+    }
+
+    /* 4. Input and label sizing */
+    .input-group label {
+        font-size: 0.9rem;
+    }
+
+    input {
+        padding: 12px 15px; /* Reduced input height */
+        font-size: 0.95rem;
+        border-radius: 12px;
+    }
+
+    /* 5. Button adjustment */
+    .submit-btn {
+        padding: 14px 0;
+        font-size: 1.05rem;
+        border-radius: 12px;
+    }
+}
+
+/* Targets very small/compact phone screens (e.g., iPhone 5/SE width) */
+@media (max-width: 320px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+    .container {
+        padding: 20px 15px;
+    }
+}

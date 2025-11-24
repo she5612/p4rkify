@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parking Reservation</title>
+  <link rel="stylesheet" href="../css/index.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Reserve Your Parking Spot</h1>
+    
+    <form id="userForm" class="user-form">
+      <div class="input-group">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" placeholder="Juan Dela Cruz" required>
+      </div>
+
+      <div class="input-group">
+        <label for="carModel">Car Model</label>
+        <input type="text" id="carModel" placeholder="Kariton" required>
+      </div>
+
+      <div class="input-group">
+        <label for="plateNumber">Plate Number</label>
+        <input type="text" id="plateNumber" placeholder="N1N2N3" required>
+      </div>
+
+      <button type="submit" class="submit-btn">Proceed</button>
+    </form>
+  </div>
+
+  <script type="module" src="../js/index.js"></script>
+</body>
+</html>
