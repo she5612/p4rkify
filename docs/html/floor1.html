@@ -1,0 +1,159 @@
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floor 1 - Parking Slots</title>
+    <link rel="stylesheet" href="../css/floor1.css"> 
+</head>
+<body>
+    <div class="glass-page-wrapper">
+        <h1 class="title">Floor 1 - Select Your Parking Slot 🚗</h1>
+
+        <div id="slotsContainer" class="slots-container">
+            </div>
+    </div>
+  <script type="module">
+        console.log("Floor Slots script loaded!");
+
+        // --- Configuration and Imports ---
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            getDocs,
+            doc,
+            updateDoc,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // IMPORTANT: Replace this with your actual, external firebaseConfig import 
+        // For a self-contained code snippet, I'll keep it here, but ideally, this is imported.
+        const firebaseConfig = {
+            apiKey: "AIzaSyDWoFHHXKxEMBk-ZhZgYstPV6fylL8SLiE",
+            authDomain: "parkifycapstone.firebaseapp.com",
+            projectId: "parkifycapstone",
+            storageBucket: "parkifycapstone.firebasestorage.app",
+            messagingSenderId: "578453779700",
+            appId: "1:578453779700:web:c34c4202c53b2152bc1aa1",
+            measurementId: "G-5NCE2MM3PM"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const slotsContainer = document.getElementById("slotsContainer");
+        const FLOOR_NAME = "Floor1"; // Define floor name constant
+
+        // --- Dynamic Slot Loading Function ---
+        async function loadSlots() {
+            slotsContainer.innerHTML = document.getElementById("loadingMessage") ? slotsContainer.innerHTML : '<p id="loadingMessage">Loading slots...</p>';
+
+            try {
+                // Construct the reference dynamically
+                const slotsRef = collection(db, "parkingSlots", FLOOR_NAME, "slots");
+                const snapshot = await getDocs(slotsRef);
+
+                slotsContainer.innerHTML = ""; // Clear loading message
+
+                if (snapshot.empty) {
+                    slotsContainer.innerHTML = '<p class="error-message">No parking slots found for this floor.</p>';
+                    return;
+                }
+
+                snapshot.forEach((docSnap) => {
+                    const slot = docSnap.data();
+                    const slotId = docSnap.id;
+                    const slotStatus = slot.status ? slot.status.toLowerCase() : 'unknown';
+
+                    let statusClass = "";
+                    let iconHtml = "";
+
+                    // Determine CSS class and visual icon based on status
+                    if (slotStatus === "available") {
+                        statusClass = "slot-available";
+                        iconHtml = '<span class="status-icon">✅</span>'; // Checkmark for available
+                    } else if (slotStatus === "reserved") {
+                        statusClass = "slot-reserved";
+                        iconHtml = '<span class="status-icon">⏳</span>'; // Hourglass for reserved
+                    } else { // Handles 'occupied' and 'unknown'
+                        statusClass = "slot-occupied";
+                        iconHtml = '<span class="status-icon">❌</span>'; // Cross for occupied/unavailable
+                    }
+
+                    const card = document.createElement("div");
+                    card.classList.add("slot-card", statusClass);
+                    card.innerHTML = `
+                        <h3>${slot.slotName || slotId}</h3>
+                        ${iconHtml}
+                        <p>${slotStatus.toUpperCase()}</p>
+                    `;
+
+                    // --- Click Handler Logic ---
+                    if (slotStatus === "available") {
+                        card.style.cursor = "pointer";
+                        
+                        // Add a subtle border or shadow on load to show availability
+                        card.style.boxShadow = "0 0 10px 2px rgba(76, 175, 80, 0.5)"; 
+
+                        card.addEventListener("click", () => {
+                            reserveSlot(slotId, slot.slotName || slotId);
+                        });
+                    } else {
+                        // Apply CSS rules for non-available slots
+                        card.style.cursor = "not-allowed";
+                    }
+
+                    slotsContainer.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error("Error fetching parking slots:", error);
+                slotsContainer.innerHTML = '<p class="error-message">Failed to load slots. Check your connection and configuration.</p>';
+            }
+        }
+
+        // --- Slot Reservation Function ---
+        async function reserveSlot(slotId, slotName) {
+            
+            // NOTE: In a real application, user data (userID, userName)
+            // would be retrieved from Firebase Authentication.
+            const TEMP_USER_ID = "USER_" + Date.now();
+            const TEMP_USER_NAME = "Parkify User";
+
+            const confirmReservation = confirm(
+                `Confirm reservation of slot ${slotName} for ${TEMP_USER_NAME}?`
+            );
+
+            if (!confirmReservation) return;
+
+            // Check for potential race condition (slot reserved by someone else)
+            // This basic example relies on the 'reserved' status update.
+
+            const slotRef = doc(db, "parkingSlots", FLOOR_NAME, "slots", slotId);
+
+            try {
+                await updateDoc(slotRef, {
+                    status: "reserved",
+                    userID: TEMP_USER_ID,
+                    userName: TEMP_USER_NAME,
+                    reservedAt: serverTimestamp(),
+                    lastUpdated: serverTimestamp()
+                });
+
+                alert(`Slot ${slotName} reserved successfully! You have a limited time to park.`);
+                loadSlots(); // Refresh the list to show the new status
+
+            } catch (error) {
+                console.error("Error reserving slot:", error);
+                alert("Failed to reserve slot. Please try again.");
+            }
+        }
+
+        // --- Initial Load ---
+        loadSlots();
+
+    </script>
+
+</body>
+</html>

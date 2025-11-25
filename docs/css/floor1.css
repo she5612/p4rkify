@@ -1,0 +1,247 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f5f7fa;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.title {
+  font-size: 28px;
+  margin: 25px 0;
+  font-weight: 600;
+}
+
+.slots-container {
+  width: 95%;
+  max-width: 900px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 18px;
+  justify-content: center;
+}
+
+.slot-card {
+  padding: 25px 10px;
+  border-radius: 12px;
+  text-align: center;
+  color: #fff;
+  font-weight: bold;
+  transition: 0.25s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Hover animation for available */
+.slot-available:hover {
+  transform: scale(1.05);
+}
+
+/* Colors */
+.slot-available {
+  background: #27ae60;
+}
+
+.slot-reserved {
+  background: #f1c40f;
+  color: #000;
+}
+
+.slot-occupied {
+  background: #e74c3c;
+}
+/* Import a modern, clean font */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&display=swap');
+
+/* --- Root Variables (Same as previous designs) --- */
+:root {
+    --primary-color: #00bcd4; /* Cyan/Turquoise */
+    --accent-color: #4db6ac; /* Muted Green/Teal */
+    --background-start: #3f51b5; /* Deep Indigo */
+    --background-end: #00bcd4; /* Cyan */
+    --text-light: #f0f0f0;
+
+    /* Slot Status Colors (Vibrant for contrast) */
+    --status-available: #4caf50; /* Bright Green */
+    --status-reserved: #ffb300; /* Amber Yellow */
+    --status-occupied: #f44336; /* Bright Red */
+}
+
+/* --- Base & Background (Glassmorphism) --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    /* Apply Glassmorphism Gradient Background */
+    background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+    color: var(--text-light);
+    padding: 20px 10px;
+    overflow-x: hidden;
+}
+
+/* Background Blurs (Aesthetic) - Adjust sizes slightly for the wider view */
+body::before, body::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+}
+
+body::before {
+    top: 5%;
+    left: 10%;
+    width: 250px;
+    height: 250px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+body::after {
+    bottom: 5%;
+    right: 10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(0, 188, 212, 0.3);
+}
+
+.glass-page-wrapper {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 1000px; /* Wider max-width for the grid view */
+    padding: 10px;
+}
+
+/* --- Title Styling --- */
+.title {
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    margin: 20px 0 35px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--text-light);
+    text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* --- Slots Grid --- */
+.slots-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    /* Highly responsive grid, minimum size 100px */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+}
+
+/* --- Slot Card Styling (Functional Aesthetics) --- */
+.slot-card {
+    /* Set a fixed aspect ratio for uniformity */
+    height: 100px; 
+    border-radius: 15px;
+    text-align: center;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    
+    /* Flex for internal alignment */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    
+    /* Ensure text is readable */
+    color: white; 
+}
+
+.slot-card h3 {
+    font-size: clamp(1rem, 4vw, 1.4rem);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.slot-card p {
+    font-size: clamp(0.6rem, 2vw, 0.8rem);
+    font-weight: 500;
+    margin: 5px 0 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-icon {
+    font-size: 1.2rem;
+    margin-bottom: 3px;
+}
+
+/* --- Status Colors & Interaction --- */
+
+/* Available - Highlighting Interactivity */
+.slot-available {
+    background: var(--status-available);
+    border: 3px solid var(--status-available);
+    box-shadow: 0 0 10px rgba(76, 175, 80, 0.5); /* Soft glow */
+}
+
+.slot-available:hover {
+    background: var(--accent-color); /* Subtle color shift on hover */
+    border-color: var(--primary-color);
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Reserved - Clear Status */
+.slot-reserved {
+    background: var(--status-reserved);
+    color: var(--text-dark); /* Dark text for readability on yellow */
+    opacity: 0.8;
+}
+
+/* Occupied - Blocked Status */
+.slot-occupied {
+    background: var(--status-full);
+    opacity: 0.6;
+}
+
+/* General style for non-available slots */
+.slot-reserved, .slot-occupied {
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+
+/* --- Mobile Responsiveness Adjustments --- */
+
+@media (max-width: 480px) {
+    .slots-container {
+        /* On small phones, reduce minmax to allow more columns if space permits */
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 10px;
+    }
+
+    .slot-card {
+        height: 85px;
+        padding: 8px;
+        border-radius: 12px;
+    }
+    
+    .status-icon {
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 768px) {
+    /* Wider slots for tablets/desktops */
+    .slots-container {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 20px;
+    }
+}
