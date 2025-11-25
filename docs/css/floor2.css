@@ -1,0 +1,191 @@
+/* Import a modern, clean font */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Montserrat:wght@300;400;600;700;800&display=swap');
+
+/* --- Root Variables (Adding Neon/Glow colors) --- */
+:root {
+    --primary-color: #00bcd4; /* Cyan/Turquoise */
+    --accent-color: #4db6ac; /* Muted Green/Teal */
+    --background-start: #1e3a8a; /* Deeper Indigo */
+    --background-end: #00838f; /* Darker Cyan */
+    --text-light: #f0f0f0;
+    --text-dark: #0f172a;
+
+    /* Slot Status Colors with Neon Glow */
+    --status-available: #69f0ae; /* Neon Green */
+    --status-reserved: #ffee58; /* Neon Yellow */
+    --status-occupied: #ff1744; /* Neon Red */
+}
+
+/* --- Base & Background (Deeper, More Contrast) --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* Use a mix of Orbitron for headings and Montserrat for body */
+    font-family: 'Montserrat', sans-serif; 
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    /* Deep, high-contrast gradient */
+    background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+    color: var(--text-light);
+    padding: 20px 10px;
+    overflow-x: hidden;
+}
+
+/* --- ANIMATION: Subtle background texture/scanline effect --- */
+/* Add a subtle, dark overlay to hint at futuristic screens/panels */
+body::before, body::after {
+    /* Keep the original blur elements, but make the main screen feel "on" */
+    filter: blur(80px);
+}
+
+.glass-page-wrapper {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 1000px;
+    padding: 10px;
+}
+
+/* --- Title Styling (Use Orbitron for futuristic heading) --- */
+.title {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(2rem, 6vw, 2.8rem);
+    margin: 20px 0 35px;
+    font-weight: 700;
+    text-align: center;
+    color: var(--primary-color); /* Title is now a neon color */
+    text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 5px rgba(0, 188, 212, 0.5); /* Stronger neon glow */
+    letter-spacing: 2px;
+}
+
+/* --- Slots Grid --- */
+.slots-container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+}
+
+/* --- Slot Card Styling (Futuristic Glass Panels) --- */
+.slot-card {
+    height: 100px; 
+    border-radius: 12px; /* Slightly sharper edges */
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother, professional transition */
+    
+    /* Stronger Glassmorphism */
+    background: rgba(255, 255, 255, 0.08); /* More transparent background */
+    border: 1px solid rgba(255, 255, 255, 0.15); /* Fainter border */
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3); /* Deeper shadow */
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    color: var(--text-light); 
+}
+
+.slot-card h3 {
+    font-size: clamp(1rem, 4vw, 1.4rem);
+    font-family: 'Orbitron', sans-serif; /* Slot ID uses the sci-fi font */
+    color: var(--text-light);
+    text-shadow: 0 0 5px var(--primary-color); /* Subtle ID glow */
+    line-height: 1.2;
+}
+
+.slot-card p {
+    font-size: clamp(0.6rem, 2vw, 0.8rem);
+    font-weight: 400;
+    margin: 5px 0 0;
+    text-transform: uppercase;
+    letter-spacing: 1px; /* Increased letter spacing */
+}
+
+.status-icon {
+    font-size: 1.3rem;
+    margin-bottom: 3px;
+    /* Neon effect for icons */
+    text-shadow: 0 0 8px currentColor; 
+}
+
+/* --- Status Colors & Interaction (Neon Glow) --- */
+
+/* Available - Highlighting Interactivity */
+.slot-available {
+    background: var(--status-available); /* Set slot color */
+    color: var(--text-dark); /* Dark text contrasts with bright background */
+    
+    /* Pulsating border glow */
+    border: 1px solid var(--status-available);
+    box-shadow: 0 0 15px 3px var(--status-available); 
+    animation: pulseGlow 1.5s infinite alternate; /* New animation for available */
+}
+
+.slot-available:hover {
+    background: var(--accent-color); 
+    border-color: var(--primary-color);
+    transform: scale(1.1); /* More dramatic hover */
+    box-shadow: 0 0 25px 5px var(--primary-color); /* Strong hover glow */
+    animation: none; /* Stop pulsing on hover */
+}
+
+/* Reserved - Clear Status */
+.slot-reserved {
+    background: var(--status-reserved);
+    color: var(--text-dark);
+    border: 1px solid var(--status-reserved);
+    box-shadow: 0 0 10px 2px var(--status-reserved);
+    opacity: 0.85;
+}
+
+/* Occupied - Blocked Status */
+.slot-occupied {
+    background: var(--status-occupied);
+    color: var(--text-light);
+    border: 1px solid var(--status-occupied);
+    box-shadow: 0 0 10px 2px var(--status-occupied);
+    opacity: 0.7;
+}
+
+/* General style for non-available slots */
+.slot-reserved:hover, .slot-occupied:hover {
+    transform: none;
+    cursor: not-allowed;
+}
+
+/* --- Keyframe Animation for Available Slot Pulse --- */
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 10px 3px var(--status-available);
+    }
+    100% {
+        box-shadow: 0 0 20px 5px var(--status-available);
+    }
+}
+
+
+/* --- Mobile Responsiveness Adjustments (Ensure smooth scaling) --- */
+@media (max-width: 480px) {
+    .slots-container {
+        grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
+        gap: 8px;
+    }
+    .slot-card {
+        height: 75px;
+        border-radius: 10px;
+    }
+    .title {
+        letter-spacing: 1px;
+    }
+}
