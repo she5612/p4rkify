@@ -1,7 +1,7 @@
-/* Import a modern, clean font */
+/* Import fonts */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800&family=Montserrat:wght@300;400;600;700;800&display=swap');
 
-/* --- Root Variables (Adding Neon/Glow colors) --- */
+/* --- Root Variables (Neon/Glow colors) --- */
 :root {
     --primary-color: #00bcd4; /* Cyan/Turquoise */
     --accent-color: #4db6ac; /* Muted Green/Teal */
@@ -16,34 +16,37 @@
     --status-occupied: #ff1744; /* Neon Red */
 }
 
-/* --- Base & Background (Deeper, More Contrast) --- */
+/* --- Base & Background (Glassmorphism & Centering) --- */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    /* Use a mix of Orbitron for headings and Montserrat for body */
     font-family: 'Montserrat', sans-serif; 
 }
 
 body {
     min-height: 100vh;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
-    /* Deep, high-contrast gradient */
-    background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
-    color: var(--text-light);
+    /* Center the content wrapper horizontally */
+    justify-content: center; 
+    align-items: flex-start;
     padding: 20px 10px;
     overflow-x: hidden;
+    
+    background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+    color: var(--text-light);
 }
 
-/* --- ANIMATION: Subtle background texture/scanline effect --- */
-/* Add a subtle, dark overlay to hint at futuristic screens/panels */
+/* Background Blurs (Aesthetic) */
 body::before, body::after {
-    /* Keep the original blur elements, but make the main screen feel "on" */
+    content: '';
+    position: absolute;
+    border-radius: 50%;
     filter: blur(80px);
+    z-index: 0;
 }
+body::before { top: 5%; left: 10%; width: 250px; height: 250px; background: rgba(255, 255, 255, 0.2); }
+body::after { bottom: 5%; right: 10%; width: 300px; height: 300px; background: rgba(0, 188, 212, 0.3); }
 
 .glass-page-wrapper {
     position: relative;
@@ -53,41 +56,48 @@ body::before, body::after {
     padding: 10px;
 }
 
-/* --- Title Styling (Use Orbitron for futuristic heading) --- */
+/* --- Title Styling (Futuristic Orbitron) --- */
 .title {
     font-family: 'Orbitron', sans-serif;
     font-size: clamp(2rem, 6vw, 2.8rem);
     margin: 20px 0 35px;
     font-weight: 700;
     text-align: center;
-    color: var(--primary-color); /* Title is now a neon color */
-    text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 5px rgba(0, 188, 212, 0.5); /* Stronger neon glow */
+    color: var(--primary-color); 
+    text-shadow: 0 0 15px rgba(0, 188, 212, 0.8), 0 0 5px rgba(0, 188, 212, 0.5); 
     letter-spacing: 2px;
 }
 
-/* --- Slots Grid --- */
+/* ------------------------------------------------ */
+/* --- SLOTS GRID (3x2 Layout Focused) --- */
+/* ------------------------------------------------ */
 .slots-container {
     width: 100%;
     max-width: 900px;
-    margin: 0 auto;
+    margin: 0 auto; /* Centers the grid wrapper */
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 15px;
+    
+    /* Fixed 3-column layout for larger screens (3 up) */
+    grid-template-columns: repeat(3, 1fr); 
+    
+    gap: 25px; /* Increased gap for better visual separation */
+    justify-content: center; 
 }
 
 /* --- Slot Card Styling (Futuristic Glass Panels) --- */
 .slot-card {
-    height: 100px; 
-    border-radius: 12px; /* Slightly sharper edges */
+    height: 120px; /* Increased height to feel more substantial */
+    border-radius: 12px;
     font-weight: 600;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother, professional transition */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     
-    /* Stronger Glassmorphism */
-    background: rgba(255, 255, 255, 0.08); /* More transparent background */
-    border: 1px solid rgba(255, 255, 255, 0.15); /* Fainter border */
+    /* Glassmorphism */
+    background: rgba(255, 255, 255, 0.08); 
+    border: 1px solid rgba(255, 255, 255, 0.15); 
     backdrop-filter: blur(10px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3); /* Deeper shadow */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
     
+    /* Content Centering */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -98,9 +108,9 @@ body::before, body::after {
 
 .slot-card h3 {
     font-size: clamp(1rem, 4vw, 1.4rem);
-    font-family: 'Orbitron', sans-serif; /* Slot ID uses the sci-fi font */
+    font-family: 'Orbitron', sans-serif; 
     color: var(--text-light);
-    text-shadow: 0 0 5px var(--primary-color); /* Subtle ID glow */
+    text-shadow: 0 0 5px var(--primary-color); 
     line-height: 1.2;
 }
 
@@ -109,13 +119,12 @@ body::before, body::after {
     font-weight: 400;
     margin: 5px 0 0;
     text-transform: uppercase;
-    letter-spacing: 1px; /* Increased letter spacing */
+    letter-spacing: 1px;
 }
 
 .status-icon {
     font-size: 1.3rem;
     margin-bottom: 3px;
-    /* Neon effect for icons */
     text-shadow: 0 0 8px currentColor; 
 }
 
@@ -123,21 +132,19 @@ body::before, body::after {
 
 /* Available - Highlighting Interactivity */
 .slot-available {
-    background: var(--status-available); /* Set slot color */
-    color: var(--text-dark); /* Dark text contrasts with bright background */
-    
-    /* Pulsating border glow */
+    background: var(--status-available); 
+    color: var(--text-dark); 
     border: 1px solid var(--status-available);
     box-shadow: 0 0 15px 3px var(--status-available); 
-    animation: pulseGlow 1.5s infinite alternate; /* New animation for available */
+    animation: pulseGlow 1.5s infinite alternate; 
 }
 
 .slot-available:hover {
     background: var(--accent-color); 
     border-color: var(--primary-color);
-    transform: scale(1.1); /* More dramatic hover */
-    box-shadow: 0 0 25px 5px var(--primary-color); /* Strong hover glow */
-    animation: none; /* Stop pulsing on hover */
+    transform: scale(1.1); 
+    box-shadow: 0 0 25px 5px var(--primary-color); 
+    animation: none; 
 }
 
 /* Reserved - Clear Status */
@@ -175,17 +182,28 @@ body::before, body::after {
 }
 
 
-/* --- Mobile Responsiveness Adjustments (Ensure smooth scaling) --- */
-@media (max-width: 480px) {
+/* ------------------------------------------------ */
+/* --- Mobile Responsiveness (Collapse to 2 columns) --- */
+/* ------------------------------------------------ */
+@media (max-width: 768px) {
     .slots-container {
-        grid-template-columns: repeat(auto-fill, minmax(75px, 1fr));
-        gap: 8px;
+        /* On medium screens (tablets in portrait, larger phones), use 2 columns */
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 15px;
+        max-width: 450px; 
     }
     .slot-card {
-        height: 75px;
-        border-radius: 10px;
+        height: 100px;
     }
-    .title {
-        letter-spacing: 1px;
+}
+
+@media (max-width: 480px) {
+    .slots-container {
+        /* On small phones, use 2 columns and tighten the gap */
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    .slot-card {
+        height: 90px;
     }
 }

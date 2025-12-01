@@ -1,14 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { 
-  getFirestore, 
-  collection, 
-  addDoc, 
-  serverTimestamp 
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getDatabase, ref, get, set, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-export const firebaseConfig = {
+// ---------------- FIREBASE CONFIG ----------------
+const firebaseConfig = {
   apiKey: "AIzaSyDWoFHHXKxEMBk-ZhZgYstPV6fylL8SLiE",
   authDomain: "parkifycapstone.firebaseapp.com",
+  databaseURL: "https://parkifycapstone-default-rtdb.asia-southeast1.firebasedatabase.app/",
   projectId: "parkifycapstone",
   storageBucket: "parkifycapstone.firebasestorage.app",
   messagingSenderId: "578453779700",
@@ -18,15 +15,18 @@ export const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+const db = getDatabase(app);
 
+// ---------------- FORM HANDLER ----------------
 document.addEventListener("DOMContentLoaded", () => {
   const userForm = document.getElementById("userForm");
+  if (!userForm) return console.error("Form not found!");
 
-  if (!userForm) {
-    console.error("userForm not found in the DOM");
-    return;
-  }
+  // Clear previous session for new user
+  localStorage.removeItem("userID");
+  localStorage.removeItem("userName");
+  localStorage.removeItem("selectedFloor");
+  localStorage.removeItem("selectedSlot");
 
   userForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -41,34 +41,53 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     try {
-      // Save user data
-      const userRef = await addDoc(collection(db, "users"), {
+      const usersRef = ref(db, "users/users");
+      const snapshot = await get(usersRef);
+
+      // Auto-increment ID
+      let newID = 1;
+      if (snapshot.exists()) {
+        const keys = Object.keys(snapshot.val());
+        keys.sort((a, b) => parseInt(a.replace("user", "")) - parseInt(b.replace("user", "")));
+        const lastKey = keys[keys.length - 1];
+        newID = Number(lastKey.replace("user", "")) + 1;
+      }
+
+      const userID = "user" + newID;
+
+      // Save user to Realtime Database
+      await set(ref(db, `users/users/${userID}`), {
         fullName,
         carModel,
         plateNumber,
-        lastReservation: serverTimestamp()
+        selectedFloor: "", // no floor yet
+        selectedSlot: "",  // no slot yet
+        lastReservation: Date.now()
       });
 
-      console.log("User saved with ID:", userRef.id);
+      // Save locally
+      localStorage.setItem("userID", userID);
+      localStorage.setItem("userName", fullName);
 
-      // Save log (optional at this stage)
-      await addDoc(collection(db, "logs"), {
+      console.log(`User ${userID} saved successfully.`);
+
+      // ---------------- LOG ENTRY ----------------
+      const logsRef = ref(db, "logs/logs");
+      const newLogRef = push(logsRef);
+      await set(newLogRef, {
         action: "entered",
         details: `${fullName} entered the system`,
         timestamp: serverTimestamp(),
-        userID: userRef.id
+        userID: userID
       });
+      console.log("Log saved for user entry.");
 
-      // Store userID locally to use in floor/slot reservation
-      localStorage.setItem("userID", userRef.id);
-      localStorage.setItem("userName", fullName);
-
-      // Redirect to chooseFloor.html
+      // Redirect to chooseFloor page
       window.location.href = "../html/chooseFloor.html";
 
     } catch (error) {
-      console.error("Error saving user:", error);
-      alert("Failed to save your information. Please try again.");
+      console.error("Save error:", error);
+      alert("Failed to save user. Check console for details.");
     }
   });
 });

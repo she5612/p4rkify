@@ -1,0 +1,70 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f9;
+  color: #333;
+}
+
+.logs-wrapper {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2c3e50;
+}
+
+.logs-container {
+  max-height: 500px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: #fff;
+}
+
+.log-item {
+  border-bottom: 1px solid #eee;
+  padding: 10px;
+  margin-bottom: 5px;
+  transition: background 0.2s;
+}
+
+.log-item:hover {
+  background-color: #f0f8ff;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.log-action {
+  color: #2c3e50;
+}
+
+.log-timestamp {
+  color: #7f8c8d;
+  font-size: 0.9em;
+}
+
+.log-body p {
+  margin: 0;
+}
+
+.log-body small {
+  color: #95a5a6;
+}
+
+.loading,
+.error,
+.no-logs {
+  text-align: center;
+  padding: 20px;
+  color: #555;
+}
