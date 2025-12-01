@@ -116,7 +116,8 @@ async function renderFloors() {
           }
 
           // Redirect to floor page
-          window.location.href = `../html/${floorName}.html`;
+          window.location.href = `${floorName.toLowerCase()}.html`;
+
         });
       }
 
