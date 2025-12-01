@@ -1,35 +1,284 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Parkify - Parking Reservation</title>
-  <link rel="stylesheet" href="../css/index.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Park4You - Reserve Spot</title>
+    <!-- FUTURISTIC FONT: Orbitron (or a similar tech-style font) for the header, Inter for body text -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Base */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            /* Using Inter for body text for readability, Orbitron for headings */
+            font-family: 'Inter', sans-serif;
+        }
+
+        :root {
+            --primary-color: #00e5ff; /* Brighter Cyan/Neon Blue */
+            --secondary-color: #4db6ac; /* Muted Green/Teal */
+            --text-color: #333;
+            --light-text-color: #f0f0f0;
+            --background-start: #1c265c; /* Very Dark Blue */
+            --background-end: #0077b6; /* Medium Blue */
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+            color: var(--light-text-color); /* Changed default body text to light */
+            padding: 15px;
+            overflow-x: hidden;
+        }
+
+        /* Background elements for visual depth (made colors slightly darker/more intense) */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 5%;
+            left: 10%;
+            width: 250px;
+            height: 250px;
+            background: rgba(0, 229, 255, 0.3); /* Neon glow */
+            border-radius: 50%;
+            filter: blur(100px);
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: 5%;
+            right: 10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(28, 38, 92, 0.4); /* Dark blue contrast */
+            border-radius: 50%;
+            filter: blur(120px);
+        }
+
+        /* Container with Glassmorphism */
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 450px;
+            padding: 35px 30px;
+            border-radius: 25px;
+
+            /* Glassmorphism Effect */
+            background: rgba(255, 255, 255, 0.08); /* Less white/more translucent */
+            border: 1px solid rgba(0, 229, 255, 0.2); /* Neon border */
+            backdrop-filter: blur(15px); /* Increased blur */
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4); /* Stronger shadow */
+        }
+
+        /* NEW: Application Header Styling */
+        .app-header {
+            display: flex;
+            flex-direction: column; /* Stack logo and name vertically */
+            align-items: center; /* Center horizontally */
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(0, 229, 255, 0.3); /* Neon border */
+            padding-bottom: 20px;
+        }
+
+        .logo {
+            width: 60px; /* Slightly larger logo */
+            height: 60px;
+            border-radius: 50%; /* Circle logo */
+            margin-bottom: 10px;
+            object-fit: cover;
+            box-shadow: 0 0 15px var(--primary-color); /* Glowing effect */
+        }
+
+        .company-name {
+            font-family: 'Orbitron', sans-serif; /* Futuristic Font */
+            font-size: 2.0rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            letter-spacing: 2px; /* Increased spacing */
+            text-shadow: 0 0 8px rgba(0, 229, 255, 0.8); /* Stronger neon glow */
+        }
+
+        /* Heading */
+        h1 {
+            font-size: 1.6rem;
+            color: var(--light-text-color);
+            margin-bottom: 30px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+            text-align: center; /* Center the sub-heading */
+        }
+
+        /* Form inputs */
+        .user-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group label {
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            color: var(--primary-color); /* Neon label color */
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(0, 229, 255, 0.5);
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 20px;
+            border-radius: 15px;
+            border: 1px solid var(--primary-color); /* Neon border */
+            background: rgba(0, 0, 0, 0.2); /* Darker input background */
+            color: var(--light-text-color);
+            font-size: 1rem;
+            font-weight: 400;
+            transition: all 0.4s ease;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: 0 0 15px var(--primary-color); /* Stronger glow on focus */
+        }
+
+        /* Button */
+        .submit-btn {
+            width: 100%;
+            padding: 16px 0;
+            background: var(--primary-color); /* Use the primary neon color */
+            color: var(--background-start); /* Dark text on bright button */
+            font-size: 1.15rem;
+            font-weight: 900;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 0 20px rgba(0, 229, 255, 0.6); /* Neon button glow */
+            margin-top: 10px;
+            white-space: nowrap;
+        }
+
+        .submit-btn:hover {
+            background: #4de5ff; /* Slightly lighter neon on hover */
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.8);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+        }
+
+        /* --- Mobile Responsiveness Adjustments --- */
+
+        /* Targets devices up to 480px wide (most small phones) */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                max-width: 100%;
+                padding: 25px 18px;
+                border-radius: 15px;
+            }
+
+            .app-header {
+                padding-bottom: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .company-name {
+                font-size: 1.7rem; /* Smaller company name on mobile */
+                letter-spacing: 1.5px;
+            }
+
+            h1 {
+                font-size: 1.4rem;
+                margin-bottom: 20px;
+            }
+
+            .input-group label {
+                font-size: 0.9rem;
+            }
+
+            input {
+                padding: 12px 15px;
+                font-size: 0.95rem;
+                border-radius: 12px;
+            }
+
+            .submit-btn {
+                padding: 14px 0;
+                font-size: 1.05rem;
+                border-radius: 12px;
+            }
+        }
+
+        /* Targets very small/compact phone screens */
+        @media (max-width: 320px) {
+            .company-name {
+                font-size: 1.5rem;
+            }
+            h1 {
+                font-size: 1.2rem;
+            }
+            .container {
+                padding: 20px 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Reserve Your Parking Spot</h1>
-    
-    <form id="userForm" class="user-form">
-      <div class="input-group">
-        <label for="fullName">Full Name</label>
-        <input type="text" id="fullName" placeholder="Juan Dela Cruz" required>
-      </div>
+    <div class="container">
+        <!-- New Header Section -->
+        <header class="app-header">
+            <!-- This is where your custom logo path is used -->
+            <img 
+                src="../imgs/parkifylogo.png" 
+                alt="Park4You Logo" 
+                class="logo" 
+                onerror="this.onerror=null; this.src='https://placehold.co/60x60/1c265c/00e5ff/png?text=P4Y';"
+            >
+            <div class="company-name">PARK4YOU</div>
+        </header>
 
-      <div class="input-group">
-        <label for="carModel">Car Model</label>
-        <input type="text" id="carModel" placeholder="Kariton" required>
-      </div>
+        <h1>Reserve Your Parking Spot</h1>
+        
+        <form id="userForm" class="user-form">
+            <div class="input-group">
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" placeholder="Juan Dela Cruz" required>
+            </div>
 
-      <div class="input-group">
-        <label for="plateNumber">Plate Number</label>
-        <input type="text" id="plateNumber" placeholder="N1N2N3" required>
-      </div>
+            <div class="input-group">
+                <label for="carModel">Car Model</label>
+                <input type="text" id="carModel" placeholder="Honda" required>
+            </div>
 
-      <button type="submit" class="submit-btn">Proceed</button>
-    </form>
-  </div>
+            <div class="input-group">
+                <label for="plateNumber">Plate Number</label>
+                <input type="text" id="plateNumber" placeholder="N1N2N3" required>
+            </div>
 
-  <script type="module" src="../js/index.js"></script>
+            <button type="submit" class="submit-btn">PROCEED</button>
+        </form>
+    </div>
+    <!-- Removed external JS link as no logic was provided and the request was for UI only -->
+     <script type="module" src="../js/index.js"></script>
 </body>
 </html>

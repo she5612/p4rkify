@@ -1,167 +1,167 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Floor 1 - Parking Slots</title>
-<link rel="stylesheet" href="../css/floor1.css"> 
-</head>
-<body>
-<div class="glass-page-wrapper">
-    <h1 class="title">Floor 1 - Select Your Parking Slot 🚗</h1>
-    <div id="slotsContainer" class="slots-container"></div>
-</div>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floor 1 - Parking Slots</title>
+    <link rel="stylesheet" href="../css/floor1.css"> 
+    </head>
+    <body>
+    <div class="glass-page-wrapper">
+        <h1 class="title">Floor 1 - Select Your Parking Slot 🚗</h1>
+        <div id="slotsContainer" class="slots-container"></div>
+    </div>
 
-<script type="module">
-console.log("Floor1.js loaded!");
+    <script type="module">
+    console.log("Floor1.js loaded!");
 
-// ---------------- FIREBASE IMPORTS ----------------
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, update, push, set, serverTimestamp, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    // ---------------- FIREBASE IMPORTS ----------------
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, update, push, set, serverTimestamp, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// ---------------- FIREBASE CONFIG ----------------
-const firebaseConfig = {
-    apiKey: "AIzaSyDWoFHHXKxEMBk-ZhZgYstPV6fylL8SLiE",
-    authDomain: "parkifycapstone.firebaseapp.com",
-    databaseURL: "https://parkifycapstone-default-rtdb.asia-southeast1.firebasedatabase.app/",
-    projectId: "parkifycapstone",
-    storageBucket: "parkifycapstone.firebasestorage.app",
-    messagingSenderId: "578453779700",
-    appId: "1:578453779700:web:c34c4202c53b2152bc1aa1",
-    measurementId: "G-5NCE2MM3PM"
-};
+    // ---------------- FIREBASE CONFIG ----------------
+    const firebaseConfig = {
+        apiKey: "AIzaSyDWoFHHXKxEMBk-ZhZgYstPV6fylL8SLiE",
+        authDomain: "parkifycapstone.firebaseapp.com",
+        databaseURL: "https://parkifycapstone-default-rtdb.asia-southeast1.firebasedatabase.app/",
+        projectId: "parkifycapstone",
+        storageBucket: "parkifycapstone.firebasestorage.app",
+        messagingSenderId: "578453779700",
+        appId: "1:578453779700:web:c34c4202c53b2152bc1aa1",
+        measurementId: "G-5NCE2MM3PM"
+    };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-// ---------------- DOM & USER INFO ----------------
-const slotsContainer = document.getElementById("slotsContainer");
-const FLOOR_NAME = "Floor1";
-const userID = localStorage.getItem("userID");
-const userName = localStorage.getItem("userName") || "Parkify User";
+    // ---------------- DOM & USER INFO ----------------
+    const slotsContainer = document.getElementById("slotsContainer");
+    const FLOOR_NAME = "Floor1";
+    const userID = localStorage.getItem("userID");
+    const userName = localStorage.getItem("userName") || "Parkify User";
 
-// ---------------- TRACK AUTO-RELEASE TIMERS ----------------
-const reservationTimers = {}; // slotId -> timeout
-const countdownIntervals = {}; // slotId -> interval for countdown display
+    // ---------------- TRACK AUTO-RELEASE TIMERS ----------------
+    const reservationTimers = {}; // slotId -> timeout
+    const countdownIntervals = {}; // slotId -> interval for countdown display
 
-// ---------------- REAL-TIME SLOT LISTENER ----------------
-const slotsRef = ref(db, `parkingSlots/parkingSlots/${FLOOR_NAME}/slots`);
-onValue(slotsRef, snapshot => {
-    const slotsData = snapshot.val() || {};
-    slotsContainer.innerHTML = "";
+    // ---------------- REAL-TIME SLOT LISTENER ----------------
+    const slotsRef = ref(db, `parkingSlots/parkingSlots/${FLOOR_NAME}/slots`);
+    onValue(slotsRef, snapshot => {
+        const slotsData = snapshot.val() || {};
+        slotsContainer.innerHTML = "";
 
-    Object.keys(slotsData).forEach(slotId => {
-        const slot = slotsData[slotId];
-        let status = (slot.status || "unknown").toLowerCase();
+        Object.keys(slotsData).forEach(slotId => {
+            const slot = slotsData[slotId];
+            let status = (slot.status || "unknown").toLowerCase();
 
-        // Clear timers if status is not reserved
-        if (status !== "reserved") {
-            if (reservationTimers[slotId]) {
-                clearTimeout(reservationTimers[slotId]);
-                delete reservationTimers[slotId];
+            // Clear timers if status is not reserved
+            if (status !== "reserved") {
+                if (reservationTimers[slotId]) {
+                    clearTimeout(reservationTimers[slotId]);
+                    delete reservationTimers[slotId];
+                }
+                if (countdownIntervals[slotId]) {
+                    clearInterval(countdownIntervals[slotId]);
+                    delete countdownIntervals[slotId];
+                }
             }
-            if (countdownIntervals[slotId]) {
-                clearInterval(countdownIntervals[slotId]);
-                delete countdownIntervals[slotId];
+
+            let statusClass = "", iconHtml = "", countdownHtml = "";
+            if (status === "available") {
+                statusClass = "slot-available";
+                iconHtml = "✅";
+            } else if (status === "reserved") {
+                statusClass = "slot-reserved";
+                iconHtml = "⏳";
+                countdownHtml = '<span class="countdown">10s</span>';
+
+                // Only start timer if not already running
+                if (!reservationTimers[slotId]) {
+                    let remaining = 10; // 10 seconds countdown
+                    const countdownSpan = document.createElement("span");
+
+                    reservationTimers[slotId] = setTimeout(async () => {
+                        try {
+                            await update(ref(db, `parkingSlots/parkingSlots/${FLOOR_NAME}/slots/${slotId}`), { 
+                                status: "available", 
+                                lastUpdated: serverTimestamp() 
+                            });
+                            await logAction("slot_auto_released", `${slot.slotName || slotId} auto-released after 10s`);
+                        } catch (err) {
+                            console.error("Auto-release error:", err);
+                        } finally {
+                            clearInterval(countdownIntervals[slotId]);
+                            delete reservationTimers[slotId];
+                            delete countdownIntervals[slotId];
+                        }
+                    }, 10000);
+
+                    // Countdown display interval
+                    countdownIntervals[slotId] = setInterval(() => {
+                        remaining--;
+                        const countdownElem = document.querySelector(`#slot-${slotId} .countdown`);
+                        if (countdownElem) countdownElem.textContent = remaining + "s";
+                        if (remaining <= 0) clearInterval(countdownIntervals[slotId]);
+                    }, 1000);
+                }
+            } else if (status === "occupied") {
+                statusClass = "slot-occupied";
+                iconHtml = "❌";
             }
-        }
 
-        let statusClass = "", iconHtml = "", countdownHtml = "";
-        if (status === "available") {
-            statusClass = "slot-available";
-            iconHtml = "✅";
-        } else if (status === "reserved") {
-            statusClass = "slot-reserved";
-            iconHtml = "⏳";
-            countdownHtml = '<span class="countdown">10s</span>';
+            // CREATE CARD
+            const card = document.createElement("div");
+            card.id = `slot-${slotId}`;
+            card.classList.add("slot-card", statusClass);
+            card.innerHTML = `
+                <h3>${slot.slotName || slotId}</h3>
+                <span class="status-icon">${iconHtml}</span>
+                <p>${status.toUpperCase()}</p>
+                ${countdownHtml}
+            `;
 
-            // Only start timer if not already running
-            if (!reservationTimers[slotId]) {
-                let remaining = 10; // 10 seconds countdown
-                const countdownSpan = document.createElement("span");
-
-                reservationTimers[slotId] = setTimeout(async () => {
-                    try {
-                        await update(ref(db, `parkingSlots/parkingSlots/${FLOOR_NAME}/slots/${slotId}`), { 
-                            status: "available", 
-                            lastUpdated: serverTimestamp() 
-                        });
-                        await logAction("slot_auto_released", `${slot.slotName || slotId} auto-released after 10s`);
-                    } catch (err) {
-                        console.error("Auto-release error:", err);
-                    } finally {
-                        clearInterval(countdownIntervals[slotId]);
-                        delete reservationTimers[slotId];
-                        delete countdownIntervals[slotId];
-                    }
-                }, 10000);
-
-                // Countdown display interval
-                countdownIntervals[slotId] = setInterval(() => {
-                    remaining--;
-                    const countdownElem = document.querySelector(`#slot-${slotId} .countdown`);
-                    if (countdownElem) countdownElem.textContent = remaining + "s";
-                    if (remaining <= 0) clearInterval(countdownIntervals[slotId]);
-                }, 1000);
+            if (status === "available") {
+                card.style.cursor = "pointer";
+                card.addEventListener("click", () => reserveSlot(slotId, slot.slotName || slotId));
+            } else {
+                card.style.cursor = "not-allowed";
             }
-        } else if (status === "occupied") {
-            statusClass = "slot-occupied";
-            iconHtml = "❌";
-        }
 
-        // CREATE CARD
-        const card = document.createElement("div");
-        card.id = `slot-${slotId}`;
-        card.classList.add("slot-card", statusClass);
-        card.innerHTML = `
-            <h3>${slot.slotName || slotId}</h3>
-            <span class="status-icon">${iconHtml}</span>
-            <p>${status.toUpperCase()}</p>
-            ${countdownHtml}
-        `;
-
-        if (status === "available") {
-            card.style.cursor = "pointer";
-            card.addEventListener("click", () => reserveSlot(slotId, slot.slotName || slotId));
-        } else {
-            card.style.cursor = "not-allowed";
-        }
-
-        slotsContainer.appendChild(card);
-    });
-});
-
-// ---------------- RESERVE SLOT ----------------
-async function reserveSlot(slotId, slotName) {
-    if (!confirm(`Reserve ${slotName} for ${userName}?`)) return;
-
-    const slotRef = ref(db, `parkingSlots/parkingSlots/${FLOOR_NAME}/slots/${slotId}`);
-    const userRef = userID ? ref(db, `users/users/${userID}`) : null;
-
-    try {
-        await update(slotRef, {
-            status: "reserved",
-            userID: userID || "TEMP_USER_" + Date.now(),
-            userName,
-            reservedAt: serverTimestamp(),
-            lastUpdated: serverTimestamp()
+            slotsContainer.appendChild(card);
         });
+    });
 
-        if (userRef) await update(userRef, { selectedFloor: FLOOR_NAME, selectedSlot: slotName, lastReservation: serverTimestamp() });
+    // ---------------- RESERVE SLOT ----------------
+    async function reserveSlot(slotId, slotName) {
+        if (!confirm(`Reserve ${slotName} for ${userName}?`)) return;
 
-        await logAction("slot_reserved", `${userName} reserved ${slotName}`);
-    } catch (err) {
-        console.error("Reservation error:", err);
-        alert("Failed to reserve slot.");
+        const slotRef = ref(db, `parkingSlots/parkingSlots/${FLOOR_NAME}/slots/${slotId}`);
+        const userRef = userID ? ref(db, `users/users/${userID}`) : null;
+
+        try {
+            await update(slotRef, {
+                status: "reserved",
+                userID: userID || "TEMP_USER_" + Date.now(),
+                userName,
+                reservedAt: serverTimestamp(),
+                lastUpdated: serverTimestamp()
+            });
+
+            if (userRef) await update(userRef, { selectedFloor: FLOOR_NAME, selectedSlot: slotName, lastReservation: serverTimestamp() });
+
+            await logAction("slot_reserved", `${userName} reserved ${slotName}`);
+        } catch (err) {
+            console.error("Reservation error:", err);
+            alert("Failed to reserve slot.");
+        }
     }
-}
 
-// ---------------- LOG HELPER ----------------
-async function logAction(action, details) {
-    const logsRef = ref(db, "logs/logs");
-    const newLogRef = push(logsRef);
-    await set(newLogRef, { action, details, timestamp: serverTimestamp(), userID: userID || "SYSTEM" });
-}
-</script>
-</body>
-</html>
+    // ---------------- LOG HELPER ----------------
+    async function logAction(action, details) {
+        const logsRef = ref(db, "logs/logs");
+        const newLogRef = push(logsRef);
+        await set(newLogRef, { action, details, timestamp: serverTimestamp(), userID: userID || "SYSTEM" });
+    }
+    </script>
+    </body>
+    </html>
