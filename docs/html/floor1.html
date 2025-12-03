@@ -36,7 +36,7 @@
             display: flex;
             justify-content: center; 
             align-items: flex-start;
-            padding: 20px 10px;
+            padding: 40px 10px; /* Increased top padding */
             overflow-x: hidden;
             
             background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
@@ -59,9 +59,9 @@
             position: relative;
             z-index: 10;
             width: 95%;
-            max-width: 700px; /* Centering limit for the two-column grid */
-            /* Adjusted padding for more internal space */
-            padding: 40px 30px 45px 30px; 
+            max-width: 700px; /* Limit for the two-column grid */
+            /* INCREASED VERTICAL PADDING */
+            padding: 60px 40px 65px 40px; 
             border-radius: 25px;
 
             /* Futuristic Glassmorphism */
@@ -70,14 +70,14 @@
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-            margin-top: 20px; /* Space from the top */
+            margin-top: 20px; 
         }
 
         /* --- Title Styling (Futuristic Orbitron) --- */
         .title {
             font-family: 'Orbitron', sans-serif;
             font-size: clamp(2rem, 6vw, 2.8rem);
-            margin: 0 0 45px; /* Increased bottom margin */
+            margin: 0 0 60px; /* Increased bottom margin: 45px -> 60px */
             padding-bottom: 15px;
             font-weight: 700;
             text-align: center;
@@ -96,7 +96,8 @@
             display: grid;
             /* 2 Equal Columns separated by a gap */
             grid-template-columns: 1fr 1fr; 
-            gap: 30px; /* Slightly increased gap */
+            /* FURTHER INCREASED GAP: More space between the two columns */
+            gap: 80px; 
             align-items: flex-start;
         }
 
@@ -104,14 +105,14 @@
         .slots-column {
             display: flex;
             flex-direction: column;
-            gap: 20px; /* Increased gap between cards */
+            gap: 35px; /* Increased vertical gap between cards: 20px -> 35px */
             padding: 0;
         }
         
         /* --- Slot Card Styling (Compact Panels) --- */
         .slot-card {
             width: 100%; /* Ensure card takes full column width */
-            height: 110px; /* Increased height */
+            height: 130px; /* Increased height: 110px -> 130px */
             border-radius: 10px;
             font-weight: 600;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -126,22 +127,22 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 12px; /* Increased padding */
+            padding: 15px; /* Increased padding */
             color: var(--text-light); 
             user-select: none;
         }
 
         .slot-card h3 {
-            font-size: clamp(1rem, 3.5vw, 1.3rem); /* Slightly larger font */
+            font-size: clamp(1.1rem, 4vw, 1.5rem); /* Slightly larger font */
             font-family: 'Orbitron', sans-serif; 
             color: var(--text-light);
             text-shadow: 0 0 5px var(--primary-color); 
             line-height: 1.1;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .slot-card p {
-            font-size: clamp(0.6rem, 1.8vw, 0.85rem); /* Slightly larger font */
+            font-size: clamp(0.7rem, 2.2vw, 0.95rem); /* Slightly larger font */
             font-weight: 400;
             margin: 0;
             text-transform: uppercase;
@@ -149,8 +150,8 @@
         }
 
         .status-icon {
-            font-size: 1.3rem; /* Slightly larger icon */
-            margin-bottom: 4px;
+            font-size: 1.6rem; /* Slightly larger icon */
+            margin-bottom: 6px;
             text-shadow: 0 0 8px currentColor; 
         }
 
@@ -195,9 +196,9 @@
 
         /* Countdown display */
         .countdown {
-            font-size: 0.8rem; /* Slightly larger countdown */
+            font-size: 0.9rem; /* Slightly larger countdown */
             font-weight: 700;
-            margin-top: 2px;
+            margin-top: 4px;
             color: var(--text-dark);
         }
 
@@ -215,7 +216,6 @@
         /* ------------------------------------------------ */
         /* --- Modal Styling (Replacing confirm/alert) --- */
         /* ------------------------------------------------ */
-         /* Adjusted modal styles for better aesthetic */
         #custom-confirm-modal {
             transition: opacity 0.3s ease;
         }
@@ -250,25 +250,26 @@
         @media (max-width: 768px) {
             .title {
                 font-size: 1.6rem;
-                margin-bottom: 25px;
+                margin-bottom: 40px; /* Adjusted margin */
             }
             .glass-page-wrapper {
-                padding: 20px 15px;
+                padding: 30px 20px;
             }
             
             .parking-map-layout {
                 grid-template-columns: 1fr; 
-                gap: 20px;
+                gap: 35px; /* Adjusted vertical gap for mobile columns */
             }
             
             .slots-column {
                 width: 100%;
                 /* Flow slots horizontally for better mobile use */
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Adjusted min width */
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Adjusted min width */
+                gap: 20px; /* Reduced gap between horizontal slots on mobile */
             }
             .slot-card {
-                 height: 100px; /* Slight height reduction for mobile */
+                 height: 110px; /* Adjusted height for mobile */
             }
         }
     </style>
