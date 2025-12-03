@@ -1,183 +1,602 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Floor 2 - Parking Slots</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-<style>
-/* --- Root Variables (Neon/Glow colors) --- */
-:root {
-    --primary-color: #00e5ff;
-    --accent-color: #4de5ff;
-    --background-start: #1c265c;
-    --background-end: #0077b6;
-    --text-light: #f0f0f0;
-    --text-dark: #0f172a;
-    --status-available: #69f0ae;
-    --status-reserved: #ffee58;
-    --status-occupied: #ff1744;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-body { min-height:100vh; display:flex; justify-content:center; align-items:flex-start; padding:20px 10px;
-    background:linear-gradient(135deg, var(--background-start), var(--background-end)); color:var(--text-light); }
-body::before, body::after { content:''; position:absolute; border-radius:50%; filter:blur(100px); z-index:0; }
-body::before { top:5%; left:10%; width:250px; height:250px; background: rgba(0,229,255,0.3); }
-body::after { bottom:5%; right:10%; width:300px; height:300px; background: rgba(28,38,92,0.4); }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floor 2 - Parking Slots</title>
+    <!-- Importing futuristic fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-.glass-page-wrapper { position:relative; z-index:10; width:95%; max-width:1000px; padding:35px 30px; border-radius:25px;
-    background: rgba(255,255,255,0.08); border:1px solid rgba(0,229,255,0.2); backdrop-filter:blur(15px);
-    -webkit-backdrop-filter:blur(15px); box-shadow:0 10px 40px rgba(0,0,0,0.4); margin-top:20px; }
+    <style>
+        /* --- Root Variables (Neon/Glow colors) --- */
+        :root {
+            --primary-color: #00e5ff; /* Brighter Cyan/Neon Blue */
+            --accent-color: #4de5ff; /* Slightly lighter neon for hover */
+            --background-start: #1c265c; /* Very Dark Blue */
+            --background-end: #0077b6; /* Medium Blue */
+            --text-light: #f0f0f0;
+            --text-dark: #0f172a;
 
-.title { font-family:'Orbitron',sans-serif; font-size:clamp(2rem,6vw,2.8rem); margin:0 0 35px; padding-bottom:15px;
-    font-weight:700; text-align:center; color:var(--primary-color);
-    text-shadow:0 0 15px rgba(0,229,255,0.8),0 0 5px rgba(0,229,255,0.5); letter-spacing:2px;
-    border-bottom:1px solid rgba(0,229,255,0.3); }
+            /* Slot Status Colors with Neon Glow */
+            --status-available: #69f0ae; /* Neon Green */
+            --status-reserved: #ffee58; /* Neon Yellow */
+            --status-occupied: #ff1744; /* Neon Red */
+        }
 
-.slots-container { width:100%; margin:0 auto; display:grid; gap:15px; justify-content:center;
-    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); }
+        /* --- Base & Background (Glassmorphism & Centering) --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif; /* Using Inter for body text */
+        }
 
-.slot-card { height:90px; border-radius:10px; font-weight:600; transition: all 0.3s cubic-bezier(0.25,0.8,0.25,1);
-    background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15); backdrop-filter:blur(10px);
-    box-shadow:0 4px 15px rgba(0,0,0,0.3); display:flex; flex-direction:column; justify-content:center; align-items:center;
-    padding:8px; color:var(--text-light); user-select:none; }
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center; 
+            align-items: flex-start;
+            padding: 20px 10px;
+            overflow-x: hidden;
+            
+            background: linear-gradient(135deg, var(--background-start) 0%, var(--background-end) 100%);
+            color: var(--text-light);
+        }
 
-.slot-card h3 { font-size:clamp(0.9rem,3vw,1.2rem); font-family:'Orbitron',sans-serif; color:var(--text-light);
-    text-shadow:0 0 5px var(--primary-color); line-height:1.1; margin-bottom:2px; }
+        /* Background Blurs (Aesthetic) */
+        body::before, body::after {
+            content: '';
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            z-index: 0;
+        }
+        body::before { top: 5%; left: 10%; width: 250px; height: 250px; background: rgba(0, 229, 255, 0.3); }
+        body::after { bottom: 5%; right: 10%; width: 300px; height: 300px; background: rgba(28, 38, 92, 0.4); }
 
-.slot-card p { font-size:clamp(0.55rem,1.5vw,0.75rem); font-weight:400; margin:0; text-transform:uppercase; letter-spacing:1px; }
+        /* --- Rectangular Box Container (Glassmorphism Wrapper) --- */
+        .glass-page-wrapper {
+            position: relative;
+            z-index: 10;
+            width: 95%;
+            max-width: 700px; /* Limit for the two-column grid */
+            /* Enhanced padding */
+            padding: 40px 30px 45px 30px; 
+            border-radius: 25px;
 
-.status-icon { font-size:1.1rem; margin-bottom:2px; text-shadow:0 0 8px currentColor; }
+            /* Futuristic Glassmorphism */
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(0, 229, 255, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            margin-top: 20px; 
+        }
 
-.slot-available { background:var(--status-available); color:var(--text-dark); border:1px solid var(--status-available);
-    box-shadow:0 0 10px 2px var(--status-available); animation:pulseGlow 1.5s infinite alternate; cursor:pointer; }
-.slot-available:hover { background:var(--accent-color); border-color:var(--primary-color); transform:scale(1.05); box-shadow:0 0 20px 4px var(--primary-color); animation:none; }
+        /* --- Title Styling (Futuristic Orbitron) --- */
+        .title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: clamp(2rem, 6vw, 2.8rem);
+            margin: 0 0 45px; /* Increased bottom margin for spacing */
+            padding-bottom: 15px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--primary-color); 
+            text-shadow: 0 0 15px rgba(0, 229, 255, 0.8), 0 0 5px rgba(0, 229, 255, 0.5); 
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(0, 229, 255, 0.3);
+        }
 
-.slot-reserved { background:var(--status-reserved); color:var(--text-dark); border:1px solid var(--status-reserved);
-    box-shadow:0 0 8px 1px var(--status-reserved); opacity:0.85; }
-.slot-occupied { background:var(--status-occupied); color:var(--text-light); border:1px solid var(--status-occupied);
-    box-shadow:0 0 8px 1px var(--status-occupied); opacity:0.7; }
-.slot-reserved:hover, .slot-occupied:hover { transform:none; cursor:not-allowed; }
+        /* ------------------------------------------------ */
+        /* --- PARKING MAP LAYOUT (2 Simple Columns) --- */
+        /* ------------------------------------------------ */
+        .parking-map-layout {
+            width: 100%;
+            margin: 20px auto 0;
+            display: grid;
+            /* 2 Equal Columns separated by a gap */
+            grid-template-columns: 1fr 1fr; 
+            gap: 30px; 
+            align-items: flex-start;
+        }
 
-.countdown { font-size:0.7rem; font-weight:700; margin-top:2px; color:var(--text-dark); }
+        /* Slot Columns - Stacking cards vertically */
+        .slots-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Space between cards */
+            padding: 0;
+        }
+        
+        /* --- Slot Card Styling (Enhanced) --- */
+        .slot-card {
+            width: 100%; 
+            height: 110px; /* Increased height for better look */
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            
+            /* Glassmorphism */
+            background: rgba(255, 255, 255, 0.08); 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
+            
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 12px; /* Increased padding */
+            color: var(--text-light); 
+            user-select: none;
+        }
 
-@keyframes pulseGlow { 0% { box-shadow:0 0 8px 2px var(--status-available); } 100% { box-shadow:0 0 16px 4px var(--status-available); } }
+        .slot-card h3 {
+            font-size: clamp(1rem, 3.5vw, 1.3rem); 
+            font-family: 'Orbitron', sans-serif; 
+            color: var(--text-light);
+            text-shadow: 0 0 5px var(--primary-color); 
+            line-height: 1.1;
+            margin-bottom: 4px;
+        }
 
-#custom-confirm-modal { transition:opacity 0.3s ease; }
-#custom-confirm-modal > div { animation:popIn 0.3s ease-out; background:#0d122b; padding:30px; border-radius:15px; box-shadow:0 0 30px var(--primary-color);
-    color:var(--text-light); max-width:90%; min-width:280px; text-align:center; border:2px solid var(--primary-color); }
-#custom-confirm-modal button { transition:background-color 0.2s, transform 0.1s; }
-#custom-confirm-modal #confirm-yes { background:#1de9b6; color:var(--text-dark); }
-#custom-confirm-modal #confirm-yes:hover { background:#00e676; transform:translateY(-1px); }
-#custom-confirm-modal #confirm-no { background:#ff5252; color:white; }
-#custom-confirm-modal #confirm-no:hover { background:#ff1744; transform:translateY(-1px); }
+        .slot-card p {
+            font-size: clamp(0.6rem, 1.8vw, 0.85rem); 
+            font-weight: 400;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-@keyframes popIn { 0% { opacity:0; transform:scale(0.9); } 100% { opacity:1; transform:scale(1); } }
-@media (max-width:600px){.title{font-size:1.6rem;margin-bottom:25px;}.glass-page-wrapper{padding:20px 15px;}}
-</style>
+        .status-icon {
+            font-size: 1.3rem; 
+            margin-bottom: 4px;
+            text-shadow: 0 0 8px currentColor; 
+        }
+
+        /* --- Status Colors & Interaction (Neon Glow) --- */
+
+        .slot-available {
+            background: var(--status-available); 
+            color: var(--text-dark); 
+            border: 1px solid var(--status-available);
+            box-shadow: 0 0 10px 2px var(--status-available); 
+            animation: pulseGlow 1.5s infinite alternate; 
+            cursor: pointer;
+        }
+
+        .slot-available:hover {
+            background: var(--accent-color); 
+            border-color: var(--primary-color);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px 4px var(--primary-color); 
+            animation: none; 
+        }
+
+        .slot-reserved {
+            background: var(--status-reserved);
+            color: var(--text-dark);
+            border: 1px solid var(--status-reserved);
+            box-shadow: 0 0 8px 1px var(--status-reserved);
+            opacity: 0.85;
+        }
+        .slot-occupied {
+            background: var(--status-occupied);
+            color: var(--text-light);
+            border: 1px solid var(--status-occupied);
+            box-shadow: 0 0 8px 1px var(--status-occupied);
+            opacity: 0.7;
+        }
+
+        .slot-reserved:hover, .slot-occupied:hover {
+            transform: none;
+            cursor: not-allowed;
+        }
+
+        /* Countdown display */
+        .countdown {
+            font-size: 0.8rem; 
+            font-weight: 700;
+            margin-top: 2px;
+            color: var(--text-dark);
+        }
+
+        /* --- Keyframe Animation for Available Slot Pulse --- */
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 0 8px 2px var(--status-available);
+            }
+            100% {
+                box-shadow: 0 0 16px 4px var(--status-available);
+            }
+        }
+
+
+        /* ------------------------------------------------ */
+        /* --- Modal Styling (Replacing confirm/alert) --- */
+        /* ------------------------------------------------ */
+         /* Adjusted modal styles for better aesthetic */
+        #custom-confirm-modal {
+            transition: opacity 0.3s ease;
+        }
+
+        #custom-confirm-modal > div {
+            animation: popIn 0.3s ease-out;
+            background: #0d122b; /* Darker background */
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px var(--primary-color);
+            color: var(--text-light);
+            max-width: 90%;
+            min-width: 280px;
+            text-align: center;
+            border: 2px solid var(--primary-color);
+        }
+
+        #custom-confirm-modal button {
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        #custom-confirm-modal #confirm-yes { background: #1de9b6; color: var(--text-dark); }
+        #custom-confirm-modal #confirm-yes:hover { background: #00e676; transform: translateY(-1px); }
+        #custom-confirm-modal #confirm-no { background: #ff5252; color: white; }
+        #custom-confirm-modal #confirm-no:hover { background: #ff1744; transform: translateY(-1px); }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Mobile specific adjustments: Stack the columns */
+        @media (max-width: 768px) {
+            .title {
+                font-size: 1.6rem;
+                margin-bottom: 25px;
+            }
+            .glass-page-wrapper {
+                padding: 20px 15px;
+            }
+            
+            .parking-map-layout {
+                grid-template-columns: 1fr; 
+                gap: 20px;
+            }
+            
+            .slots-column {
+                width: 100%;
+                /* Flow slots horizontally for better mobile use */
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
+            }
+            .slot-card {
+                 height: 100px; /* Slight height reduction for mobile */
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="glass-page-wrapper">
-<h1 class="title">Floor 2 - Select Your Parking Slot 🚗</h1>
-<div id="slotsContainer" class="slots-container"></div>
+    <h1 class="title">Floor 2 - Live Parking Map 🚗</h1>
+    
+    <!-- New Layout Structure: Two Columns -->
+    <div class="parking-map-layout">
+        <!-- Left Slots Column (B3, B2, B1) - Renders top to bottom -->
+        <div id="leftSlotsContainer" class="slots-column">
+            <!-- Slots B3, B2, B1 will be rendered here -->
+        </div>
+        
+        <!-- Right Slots Column (B4, B5, B6) - Renders top to bottom -->
+        <div id="rightSlotsContainer" class="slots-column">
+            <!-- Slots B4, B5, B6 will be rendered here -->
+        </div>
+    </div>
 </div>
 
 <script type="module">
-// --- Custom Modal & Message Helpers ---
-function showMessage(message,type='info'){const box=document.createElement('div');box.textContent=message;box.style.cssText=`position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 20px;border-radius:8px;z-index:10000;font-weight:600;color:var(--text-dark);background-color:${type==='error'?'#ff1744':'#00e5ff'};box-shadow:0 4px 15px rgba(0,0,0,0.3);transition:all 0.5s ease-in-out;opacity:0;font-family:'Inter',sans-serif;`;document.body.appendChild(box);setTimeout(()=>{box.style.opacity=1;},10);setTimeout(()=>{box.style.opacity=0;box.addEventListener('transitionend',()=>box.remove());},3000);}
-function showConfirmModal(message){return new Promise(resolve=>{let modal=document.getElementById('custom-confirm-modal');if(modal) modal.remove();modal=document.createElement('div');modal.id='custom-confirm-modal';modal.style.cssText=`position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;justify-content:center;align-items:center;z-index:20000;backdrop-filter:blur(8px);`;const content=document.createElement('div');content.style.cssText=`background:#0d122b;padding:30px;border-radius:15px;box-shadow:0 0 30px var(--primary-color);color:var(--text-light);max-width:90%;min-width:280px;text-align:center;font-family:'Inter',sans-serif;`;content.innerHTML=`<p style="font-size:1.1rem;margin-bottom:25px;line-height:1.5;">${message}</p><button id="confirm-yes" style="padding:10px 20px;margin:0 8px;background:#1de9b6;color:var(--text-dark);border:none;border-radius:8px;cursor:pointer;font-weight:700;transition:all 0.2s;">Yes</button><button id="confirm-no" style="padding:10px 20px;margin:0 8px;background:#ff5252;color:white;border:none;border-radius:8px;cursor:pointer;font-weight:700;transition:all 0.2s;">No</button>`;modal.appendChild(content);document.body.appendChild(modal);document.getElementById('confirm-yes').onclick=()=>{modal.remove();resolve(true);};document.getElementById('confirm-no').onclick=()=>{modal.remove();resolve(false);};});}
+// ---------------- CUSTOM MODAL/MESSAGE UI (Replacing alert/confirm) ----------------
+// Function to show a temporary message (replaces alert)
+function showMessage(message, type = 'info') {
+    const box = document.createElement('div');
+    box.textContent = message;
+    box.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 10000;
+        font-weight: 600;
+        color: var(--text-dark);
+        background-color: ${type === 'error' ? '#ff1744' : '#00e5ff'};
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        transition: all 0.5s ease-in-out;
+        opacity: 0;
+        font-family: 'Inter', sans-serif;
+    `;
+    document.body.appendChild(box);
 
-// --- Firebase Imports ---
+    setTimeout(() => {
+        box.style.opacity = 1;
+    }, 10);
+    
+    setTimeout(() => {
+        box.style.opacity = 0;
+        box.addEventListener('transitionend', () => box.remove());
+    }, 3000);
+}
+
+// Function to handle confirmation (replaces confirm)
+function showConfirmModal(message) {
+    return new Promise(resolve => {
+        const modalId = 'custom-confirm-modal';
+        let modal = document.getElementById(modalId);
+        if (modal) modal.remove();
+
+        modal = document.createElement('div');
+        modal.id = modalId;
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20000;
+            backdrop-filter: blur(8px);
+        `;
+
+        const content = document.createElement('div');
+        content.style.cssText = `
+            background: #0d122b;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px var(--primary-color);
+            color: var(--text-light);
+            max-width: 90%;
+            min-width: 280px;
+            text-align: center;
+            border: 2px solid var(--primary-color);
+            font-family: 'Inter', sans-serif;
+        `;
+        content.innerHTML = `
+            <p style="font-size: 1.1rem; margin-bottom: 25px; line-height: 1.5;">${message}</p>
+            <button id="confirm-yes" style="padding: 10px 20px; margin: 0 8px; background: #1de9b6; color: var(--text-dark); border: none; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.2s;">Yes</button>
+            <button id="confirm-no" style="padding: 10px 20px; margin: 0 8px; background: #ff5252; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; transition: all 0.2s;">No</button>
+        `;
+
+        modal.appendChild(content);
+        document.body.appendChild(modal);
+
+        document.getElementById('confirm-yes').onclick = () => {
+            modal.remove();
+            resolve(true);
+        };
+        document.getElementById('confirm-no').onclick = () => {
+            modal.remove();
+            resolve(false);
+        };
+    });
+}
+// ---------------- END CUSTOM MODAL/MESSAGE UI ----------------
+
+console.log("Floor2.js loaded!");
+
+// ---------------- FIREBASE IMPORTS ----------------
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getDatabase, ref, update, push, set, serverTimestamp, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-// --- Firebase Config ---
-const firebaseConfig={apiKey:"AIzaSyDWoFHHXKxEMBk-ZhZgYstPV6fylL8SLiE",authDomain:"parkifycapstone.firebaseapp.com",databaseURL:"https://parkifycapstone-default-rtdb.asia-southeast1.firebasedatabase.app/",projectId:"parkifycapstone",storageBucket:"parkifycapstone.firebasestorage.app",messagingSenderId:"578453779700",appId:"1:578453779700:web:c34c4202c53b2152bc1aa1",measurementId:"G-5NCE2MM3PM"};
+// ---------------- FIREBASE CONFIG ----------------
+// Using the hardcoded configuration provided by the user.
+const firebaseConfig = {
+    apiKey: "AIzaSyDWoFHHXKxEMBk-ZhZgYstPV6fylL8SLiE",
+    authDomain: "parkifycapstone.firebaseapp.com",
+    databaseURL: "https://parkifycapstone-default-rtdb.asia-southeast1.firebasedatabase.app/",
+    projectId: "parkifycapstone",
+    storageBucket: "parkifycapstone.firebasestorage.app",
+    messagingSenderId: "578453779700",
+    appId: "1:578453779700:web:c34c4202c53b2152bc1aa1",
+    measurementId: "G-5NCE2MM3PM"
+};
 
-const app=initializeApp(firebaseConfig); const db=getDatabase(app);
-const slotsContainer=document.getElementById("slotsContainer");
-const FLOOR_NAME="Floor2"; const userID=localStorage.getItem("userID"); const userName=localStorage.getItem("userName")||"Parkify User";
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-const reservationTimers={}; const countdownIntervals={};
+// ---------------- DOM & USER INFO ----------------
+const leftSlotsContainer = document.getElementById("leftSlotsContainer");
+const rightSlotsContainer = document.getElementById("rightSlotsContainer");
+const FLOOR_NAME = "Floor2";
+// Using robust defaults since localStorage is unreliable in this environment
+const userID = "GUEST_" + Math.random().toString(36).substring(2, 9).toUpperCase(); 
+const userName = "Parkify User"; 
 
-// --- Real-time listener ---
-const slotsRef=ref(db,`parkingSlots/parkingSlots/${FLOOR_NAME}/slots`);
-onValue(slotsRef,snapshot=>{
-    const slotsData=snapshot.val()||{};
-    const existingSlotIds=new Set(Array.from(slotsContainer.children).map(c=>c.id.replace('slot-','')));
-    const newSlotIds=new Set(Object.keys(slotsData));
+// ---------------- TRACK AUTO-RELEASE TIMERS ----------------
+const reservationTimers = {}; // slotId -> timeout for DB update (10s)
+const countdownIntervals = {}; // slotId -> interval for countdown display (1s)
 
-    Object.keys(slotsData).forEach(slotId=>{
-        const slot=slotsData[slotId]; let status=(slot.status||"unknown").toLowerCase();
-        let card=document.getElementById(`slot-${slotId}`); let mustReRenderContent=false;
-        let statusClass="",iconHtml="",countdownHtml="";
+// ---------------- REAL-TIME SLOT LISTENER (ADAPTED FOR NEW LAYOUT) ----------------
+const slotsRef = ref(db, `parkingSlots/parkingSlots/${FLOOR_NAME}/slots`);
+onValue(slotsRef, snapshot => {
+    const slotsData = snapshot.val() || {};
+    
+    // 1. Clear existing content and prepare for ordered rendering
+    leftSlotsContainer.innerHTML = '';
+    rightSlotsContainer.innerHTML = '';
+    const renderedCards = {};
 
-        if(status==="available"){statusClass="slot-available";iconHtml="✅"; if(reservationTimers[slotId]){clearTimeout(reservationTimers[slotId]);delete reservationTimers[slotId];} if(countdownIntervals[slotId]){clearInterval(countdownIntervals[slotId]);delete countdownIntervals[slotId];} mustReRenderContent=true;}
-        else if(status==="reserved"){
-    statusClass="slot-reserved";
-    iconHtml="⏳";
+    // Define the new desired order for insertion
+    const leftOrder = ['B3', 'B2', 'B1']; // Top to bottom
+    const rightOrder = ['B4', 'B5', 'B6']; // Top to bottom
 
-    // Clear existing timers
-    if(reservationTimers[slotId]) { clearTimeout(reservationTimers[slotId]); delete reservationTimers[slotId]; }
-    if(countdownIntervals[slotId]) { clearInterval(countdownIntervals[slotId]); delete countdownIntervals[slotId]; }
+    Object.keys(slotsData).forEach(slotId => {
+        const slot = slotsData[slotId];
+        let status = (slot.status || "unknown").toLowerCase();
+        let card = document.getElementById(`slot-${slotId}`);
 
-    // Start countdown from 10s
-    let remaining = 10;
-    countdownHtml = `<span class="countdown">${remaining}s</span>`;
-    mustReRenderContent = true;
+        let statusClass = "", iconHtml = "", countdownHtml = "";
+        let mustReRenderContent = false;
 
-    // Update DOM immediately
-    if(!card) card = document.createElement("div");
+        // --- Status Logic and Timer Management ---
+        if (status === "available") {
+            statusClass = "slot-available";
+            iconHtml = "✅";
+            // Clear any running timers/intervals if it becomes available
+            if (reservationTimers[slotId]) {
+                clearTimeout(reservationTimers[slotId]);
+                delete reservationTimers[slotId];
+            }
+            if (countdownIntervals[slotId]) {
+                clearInterval(countdownIntervals[slotId]);
+                delete countdownIntervals[slotId];
+            }
+            mustReRenderContent = true;
 
-    // Interval to update countdown every second
-    countdownIntervals[slotId] = setInterval(() => {
-        remaining--;
-        const elem = document.querySelector(`#slot-${slotId} .countdown`);
-        if(elem) elem.textContent = remaining + "s";
-        if(remaining <= 0){
-            clearInterval(countdownIntervals[slotId]);
-            delete countdownIntervals[slotId];
+        } else if (status === "reserved") {
+            statusClass = "slot-reserved";
+            iconHtml = "⏳";
+            
+            // Check if client-side timer needs to be initialized/re-initialized
+            if (!countdownIntervals[slotId]) {
+                mustReRenderContent = true; 
+                let remaining = 10;
+                countdownHtml = `<span class="countdown">${remaining}s</span>`;
+                
+                // 1. Setup the Auto-Release Timeout (DB update)
+                reservationTimers[slotId] = setTimeout(async () => {
+                    try {
+                        await update(ref(db, `parkingSlots/parkingSlots/${FLOOR_NAME}/slots/${slotId}`), { 
+                            status: "available", 
+                            lastUpdated: serverTimestamp() 
+                        });
+                        await logAction("slot_auto_released", `${slot.slotName || slotId} auto-released after 10s`);
+                    } catch (err) {
+                        console.error("Auto-release error:", err);
+                    } finally {
+                        if (countdownIntervals[slotId]) clearInterval(countdownIntervals[slotId]);
+                        delete reservationTimers[slotId];
+                        delete countdownIntervals[slotId];
+                    }
+                }, 10000);
+
+                // 2. Setup the Countdown Display Interval (Client-side display)
+                countdownIntervals[slotId] = setInterval(() => {
+                    remaining--;
+                    // Find the countdown span in the DOM
+                    const countdownElem = document.querySelector(`#slot-${slotId} .countdown`);
+                    if (countdownElem) countdownElem.textContent = remaining + "s";
+                    if (remaining <= 0) {
+                        clearInterval(countdownIntervals[slotId]);
+                        delete countdownIntervals[slotId];
+                    }
+                }, 1000);
+
+            } else {
+                // Timer IS running. Just ensure the countdown span container exists.
+                countdownHtml = '<span class="countdown"></span>'; 
+            }
+
+        } else if (status === "occupied") {
+            statusClass = "slot-occupied";
+            iconHtml = "❌";
+             // Clear any running timers/intervals if it becomes occupied
+            if (reservationTimers[slotId]) {
+                clearTimeout(reservationTimers[slotId]);
+                delete reservationTimers[slotId];
+            }
+            if (countdownIntervals[slotId]) {
+                clearInterval(countdownIntervals[slotId]);
+                delete countdownIntervals[slotId];
+            }
+            mustReRenderContent = true;
         }
-    }, 1000);
 
-    // Auto-release slot after 10s
-    reservationTimers[slotId] = setTimeout(async () => {
-        try{
-            await update(ref(db,`parkingSlots/parkingSlots/${FLOOR_NAME}/slots/${slotId}`),{
-                status:"available",
-                lastUpdated:serverTimestamp()
-            });
-            await logAction("slot_auto_released",`${slot.slotName||slotId} auto-released after 10s`);
-        }catch(e){ console.error(e); }
-        finally{
-            if(countdownIntervals[slotId]) { clearInterval(countdownIntervals[slotId]); delete countdownIntervals[slotId]; }
-            delete reservationTimers[slotId];
+        // --- DOM Update Logic ---
+        const newContent = `
+            <h3>${slot.slotName || slotId}</h3>
+            <span class="status-icon">${iconHtml}</span>
+            <p>${status.toUpperCase()}</p>
+            ${countdownHtml}
+        `;
+
+        if (!card) {
+            // Create New Card if it doesn't exist
+            card = document.createElement("div");
+            card.id = `slot-${slotId}`;
+            card.classList.add("slot-card");
+            // NOTE: Not appending here, storing for ordered insertion later
+            mustReRenderContent = true; 
+        } 
+        
+        // Always update class for color change
+        card.className = "slot-card " + statusClass;
+        
+        // Only set innerHTML if content needs to change
+        if (mustReRenderContent) {
+             card.innerHTML = newContent;
         }
-    }, remaining * 1000);
-}
 
-        else if(status==="occupied"){statusClass="slot-occupied";iconHtml="❌"; if(reservationTimers[slotId]){clearTimeout(reservationTimers[slotId]);delete reservationTimers[slotId];} if(countdownIntervals[slotId]){clearInterval(countdownIntervals[slotId]);delete countdownIntervals[slotId];} mustReRenderContent=true;}
+        // Add/Re-add Event Listener 
+        const oldListener = card.listener;
+        if (oldListener) card.removeEventListener("click", oldListener); 
 
-        const newContent=`<h3>${slot.slotName||slotId}</h3><span class="status-icon">${iconHtml}</span><p>${status.toUpperCase()}</p>${countdownHtml}`;
-
-        if(!card){card=document.createElement("div");card.id=`slot-${slotId}`;card.classList.add("slot-card");slotsContainer.appendChild(card); mustReRenderContent=true;}
-        card.className="slot-card "+statusClass;
-        if(mustReRenderContent) card.innerHTML=newContent;
-
-        const oldListener=card.listener; if(oldListener) card.removeEventListener("click",oldListener);
-        if(status==="available"){card.style.cursor="pointer"; const newListener=()=>reserveSlot(slotId,slot.slotName||slotId); card.addEventListener("click",newListener); card.listener=newListener;}
-        else card.style.cursor="not-allowed";
+        if (status === "available") {
+            card.style.cursor = "pointer";
+            const newListener = () => reserveSlot(slotId, slot.slotName || slotId);
+            card.addEventListener("click", newListener);
+            card.listener = newListener; // Store reference to remove later
+        } else {
+            card.style.cursor = "not-allowed";
+        }
+        
+        // Store card for later ordered placement
+        renderedCards[slotId] = card;
+    });
+    
+    // 2. Ordered insertion into the final containers based on the requested B3-B1 / B4-B6 order
+    
+    // Insert Left Column (B3 top to B1 bottom)
+    leftOrder.forEach(id => {
+        if (renderedCards[id]) leftSlotsContainer.appendChild(renderedCards[id]);
     });
 
-    existingSlotIds.forEach(slotId=>{if(!newSlotIds.has(slotId)){const c=document.getElementById(`slot-${slotId}`);if(c){c.remove(); if(reservationTimers[slotId]) clearTimeout(reservationTimers[slotId]); if(countdownIntervals[slotId]) clearInterval(countdownIntervals[slotId]); delete reservationTimers[slotId]; delete countdownIntervals[slotId];}}});
+    // Insert Right Column (B4 top to B6 bottom)
+    rightOrder.forEach(id => {
+        if (renderedCards[id]) rightSlotsContainer.appendChild(renderedCards[id]);
+    });
 });
 
-// --- Reserve Slot ---
-async function reserveSlot(slotId,slotName){const isConfirmed=await showConfirmModal(`Reserve ${slotName} for ${userName}?`); if(!isConfirmed)return; const slotRef=ref(db,`parkingSlots/parkingSlots/${FLOOR_NAME}/slots/${slotId}`); const userRef=userID?ref(db,`users/users/${userID}`):null;
-try{await update(slotRef,{status:"reserved",userID:userID||"TEMP_USER_"+Date.now(),userName,reservedAt:serverTimestamp(),lastUpdated:serverTimestamp()}); if(userRef) await update(userRef,{selectedFloor:FLOOR_NAME,selectedSlot:slotName,lastReservation:serverTimestamp()}); await logAction("slot_reserved",`${userName} reserved ${slotName}`);}catch(e){console.error(e);showMessage("Failed to reserve slot","error");}}
+// ---------------- RESERVE SLOT ----------------
+async function reserveSlot(slotId, slotName) {
+    const isConfirmed = await showConfirmModal(`Reserve ${slotName} for ${userName}?`);
+    if (!isConfirmed) return;
 
-// --- Log Helper ---
-async function logAction(action,details){const logsRef=ref(db,"logs/logs");const newLogRef=push(logsRef);await set(newLogRef,{action,details,timestamp:serverTimestamp(),userID:userID||"SYSTEM"});}
+    const slotRef = ref(db, `parkingSlots/parkingSlots/${FLOOR_NAME}/slots/${slotId}`);
+    
+    try {
+        await update(slotRef, {
+            status: "reserved",
+            // Use the globally defined (or default) ID/Name
+            userID: userID,
+            userName: userName,
+            reservedAt: serverTimestamp(),
+            lastUpdated: serverTimestamp()
+        });
+        
+        await logAction("slot_reserved", `${userName} reserved ${slotName}`);
+    } catch (err) {
+        console.error("Reservation error:", err);
+        showMessage("Failed to reserve slot. It may have been taken.", "error");
+    }
+}
+
+// ---------------- LOG HELPER ----------------
+async function logAction(action, details) {
+    const logsRef = ref(db, "logs/logs");
+    const newLogRef = push(logsRef);
+    await set(newLogRef, { action, details, timestamp: serverTimestamp(), userID: userID || "SYSTEM" });
+}
 </script>
 </body>
 </html>

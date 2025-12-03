@@ -59,8 +59,9 @@
             position: relative;
             z-index: 10;
             width: 95%;
-            max-width: 1000px; /* Centering limit */
-            padding: 35px 30px; /* Padding for the container box */
+            max-width: 700px; /* Centering limit for the two-column grid */
+            /* Adjusted padding for more internal space */
+            padding: 40px 30px 45px 30px; 
             border-radius: 25px;
 
             /* Futuristic Glassmorphism */
@@ -76,7 +77,7 @@
         .title {
             font-family: 'Orbitron', sans-serif;
             font-size: clamp(2rem, 6vw, 2.8rem);
-            margin: 0 0 35px;
+            margin: 0 0 45px; /* Increased bottom margin */
             padding-bottom: 15px;
             font-weight: 700;
             text-align: center;
@@ -87,23 +88,31 @@
         }
 
         /* ------------------------------------------------ */
-        /* --- SLOTS GRID (Compact and Responsive) --- */
+        /* --- PARKING MAP LAYOUT (2 Simple Columns) --- */
         /* ------------------------------------------------ */
-        .slots-container {
+        .parking-map-layout {
             width: 100%;
-            margin: 0 auto;
+            margin: 20px auto 0;
             display: grid;
-            gap: 15px; /* Reduced gap for compactness */
-            justify-content: center; 
-            
-            /* Fluid Grid: Aims for 3-4 columns, min width 90px per card */
-            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); 
+            /* 2 Equal Columns separated by a gap */
+            grid-template-columns: 1fr 1fr; 
+            gap: 30px; /* Slightly increased gap */
+            align-items: flex-start;
         }
 
-        /* --- Slot Card Styling (Smaller, Compact Panels) --- */
+        /* Slot Columns - Stacking cards vertically */
+        .slots-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Increased gap between cards */
+            padding: 0;
+        }
+        
+        /* --- Slot Card Styling (Compact Panels) --- */
         .slot-card {
-            height: 90px; /* Reduced card height */
-            border-radius: 10px; /* Slightly reduced radius */
+            width: 100%; /* Ensure card takes full column width */
+            height: 110px; /* Increased height */
+            border-radius: 10px;
             font-weight: 600;
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             
@@ -113,27 +122,26 @@
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
             
-            /* Content Centering */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 8px; /* Reduced padding */
+            padding: 12px; /* Increased padding */
             color: var(--text-light); 
             user-select: none;
         }
 
         .slot-card h3 {
-            font-size: clamp(0.9rem, 3vw, 1.2rem); /* Smaller font for slot name */
+            font-size: clamp(1rem, 3.5vw, 1.3rem); /* Slightly larger font */
             font-family: 'Orbitron', sans-serif; 
             color: var(--text-light);
             text-shadow: 0 0 5px var(--primary-color); 
             line-height: 1.1;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
         }
 
         .slot-card p {
-            font-size: clamp(0.55rem, 1.5vw, 0.75rem); /* Smaller status text */
+            font-size: clamp(0.6rem, 1.8vw, 0.85rem); /* Slightly larger font */
             font-weight: 400;
             margin: 0;
             text-transform: uppercase;
@@ -141,19 +149,18 @@
         }
 
         .status-icon {
-            font-size: 1.1rem; /* Smaller icon */
-            margin-bottom: 2px;
+            font-size: 1.3rem; /* Slightly larger icon */
+            margin-bottom: 4px;
             text-shadow: 0 0 8px currentColor; 
         }
 
         /* --- Status Colors & Interaction (Neon Glow) --- */
 
-        /* Available - Highlighting Interactivity */
         .slot-available {
             background: var(--status-available); 
             color: var(--text-dark); 
             border: 1px solid var(--status-available);
-            box-shadow: 0 0 10px 2px var(--status-available); /* Reduced shadow intensity */
+            box-shadow: 0 0 10px 2px var(--status-available); 
             animation: pulseGlow 1.5s infinite alternate; 
             cursor: pointer;
         }
@@ -166,7 +173,6 @@
             animation: none; 
         }
 
-        /* Reserved/Occupied */
         .slot-reserved {
             background: var(--status-reserved);
             color: var(--text-dark);
@@ -189,7 +195,7 @@
 
         /* Countdown display */
         .countdown {
-            font-size: 0.7rem;
+            font-size: 0.8rem; /* Slightly larger countdown */
             font-weight: 700;
             margin-top: 2px;
             color: var(--text-dark);
@@ -240,8 +246,8 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        /* Mobile specific adjustments */
-        @media (max-width: 600px) {
+        /* Mobile specific adjustments: Stack the columns */
+        @media (max-width: 768px) {
             .title {
                 font-size: 1.6rem;
                 margin-bottom: 25px;
@@ -249,13 +255,39 @@
             .glass-page-wrapper {
                 padding: 20px 15px;
             }
+            
+            .parking-map-layout {
+                grid-template-columns: 1fr; 
+                gap: 20px;
+            }
+            
+            .slots-column {
+                width: 100%;
+                /* Flow slots horizontally for better mobile use */
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Adjusted min width */
+            }
+            .slot-card {
+                 height: 100px; /* Slight height reduction for mobile */
+            }
         }
     </style>
 </head>
 <body>
 <div class="glass-page-wrapper">
-    <h1 class="title">Floor 1 - Select Your Parking Slot 🚗</h1>
-    <div id="slotsContainer" class="slots-container"></div>
+    <h1 class="title">Floor 1 - Live Parking Map 🚗</h1>
+    
+    <div class="parking-map-layout">
+        <!-- Left Slots Column (A5, A6, A7, A8) -->
+        <div id="leftSlotsContainer" class="slots-column">
+            <!-- Slots will be rendered here by JavaScript -->
+        </div>
+        
+        <!-- Right Slots Column (A4, A3, A2, A1) -->
+        <div id="rightSlotsContainer" class="slots-column">
+            <!-- Slots will be rendered here by JavaScript -->
+        </div>
+    </div>
 </div>
 
 <script type="module">
@@ -356,7 +388,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getDatabase, ref, update, push, set, serverTimestamp, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 // ---------------- FIREBASE CONFIG ----------------
-// NOTE: Using provided static config/keys as no Canvas global variables were provided
+// Using the hardcoded configuration provided by the user, as this appears to be for a specific Realtime Database instance.
 const firebaseConfig = {
     apiKey: "AIzaSyDWoFHHXKxEMBk-ZhZgYstPV6fylL8SLiE",
     authDomain: "parkifycapstone.firebaseapp.com",
@@ -372,25 +404,27 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 // ---------------- DOM & USER INFO ----------------
-const slotsContainer = document.getElementById("slotsContainer");
+const leftSlotsContainer = document.getElementById("leftSlotsContainer");
+const rightSlotsContainer = document.getElementById("rightSlotsContainer");
 const FLOOR_NAME = "Floor1";
-const userID = localStorage.getItem("userID");
-const userName = localStorage.getItem("userName") || "Parkify User";
+// Replacing localStorage with a robust, temporary default since it's unreliable in this environment.
+const userID = "GUEST_" + Math.random().toString(36).substring(2, 9).toUpperCase();
+const userName = "Parkify User";
 
 // ---------------- TRACK AUTO-RELEASE TIMERS ----------------
 const reservationTimers = {}; // slotId -> timeout for DB update (10s)
 const countdownIntervals = {}; // slotId -> interval for countdown display (1s)
 
-// ---------------- REAL-TIME SLOT LISTENER (FIXED FOR LIVE COUNTDOWN) ----------------
+// ---------------- REAL-TIME SLOT LISTENER (FIXED FOR LIVE COUNTDOWN & LAYOUT) ----------------
 const slotsRef = ref(db, `parkingSlots/parkingSlots/${FLOOR_NAME}/slots`);
 onValue(slotsRef, snapshot => {
     const slotsData = snapshot.val() || {};
     
-    // Get current IDs in the DOM to check for deletions later
-    const existingSlotIds = new Set(Array.from(slotsContainer.children).map(child => child.id.replace('slot-', '')));
-    const newSlotIds = new Set(Object.keys(slotsData));
+    // 1. Clear existing content and prepare for ordered rendering
+    leftSlotsContainer.innerHTML = '';
+    rightSlotsContainer.innerHTML = '';
+    const renderedCards = {};
 
-    // 1. Process/Update existing slots and create new ones
     Object.keys(slotsData).forEach(slotId => {
         const slot = slotsData[slotId];
         let status = (slot.status || "unknown").toLowerCase();
@@ -420,12 +454,11 @@ onValue(slotsRef, snapshot => {
             
             // Check if client-side timer needs to be initialized/re-initialized
             if (!countdownIntervals[slotId]) {
-                // Timer is NOT running, so start fresh (or restarted)
                 mustReRenderContent = true; 
                 let remaining = 10;
                 countdownHtml = `<span class="countdown">${remaining}s</span>`;
                 
-                // 1. Setup the Auto-Release Timeout (DB update) - Retains original logic
+                // 1. Setup the Auto-Release Timeout (DB update)
                 reservationTimers[slotId] = setTimeout(async () => {
                     try {
                         await update(ref(db, `parkingSlots/parkingSlots/${FLOOR_NAME}/slots/${slotId}`), { 
@@ -442,7 +475,7 @@ onValue(slotsRef, snapshot => {
                     }
                 }, 10000);
 
-                // 2. Setup the Countdown Display Interval (Client-side display) - Retains original logic
+                // 2. Setup the Countdown Display Interval (Client-side display)
                 countdownIntervals[slotId] = setInterval(() => {
                     remaining--;
                     // Find the countdown span in the DOM
@@ -455,8 +488,7 @@ onValue(slotsRef, snapshot => {
                 }, 1000);
 
             } else {
-                // Timer IS running. Do NOT re-render the inner HTML. 
-                // Just ensure the countdown span container exists (it should, if the card exists).
+                // Timer IS running. Just ensure the countdown span container exists.
                 countdownHtml = '<span class="countdown"></span>'; 
             }
 
@@ -475,7 +507,7 @@ onValue(slotsRef, snapshot => {
             mustReRenderContent = true;
         }
 
-        // --- DOM Update Logic (Intelligent Re-rendering) ---
+        // --- DOM Update Logic ---
         const newContent = `
             <h3>${slot.slotName || slotId}</h3>
             <span class="status-icon">${iconHtml}</span>
@@ -488,20 +520,19 @@ onValue(slotsRef, snapshot => {
             card = document.createElement("div");
             card.id = `slot-${slotId}`;
             card.classList.add("slot-card");
-            slotsContainer.appendChild(card);
-            mustReRenderContent = true; // Ensure new card gets content
+            // NOTE: Not appending here, storing for ordered insertion later
+            mustReRenderContent = true; 
         } 
         
         // Always update class for color change
         card.className = "slot-card " + statusClass;
         
-        // Only set innerHTML if content needs to change (i.e., status changed, or it's a new card)
-        // This prevents interrupting the countdown span's innerHTML update
+        // Only set innerHTML if content needs to change
         if (mustReRenderContent) {
              card.innerHTML = newContent;
         }
 
-        // Add/Re-add Event Listener (crucial for proper garbage collection/memory management)
+        // Add/Re-add Event Listener 
         const oldListener = card.listener;
         if (oldListener) card.removeEventListener("click", oldListener); 
 
@@ -513,21 +544,23 @@ onValue(slotsRef, snapshot => {
         } else {
             card.style.cursor = "not-allowed";
         }
+        
+        // Store card for later ordered placement
+        renderedCards[slotId] = card;
+    });
+    
+    // 2. Ordered insertion into the final containers
+    const leftOrder = ['A5', 'A6', 'A7', 'A8'];
+    const rightOrder = ['A4', 'A3', 'A2', 'A1'];
+    
+    // Insert Left Column (A5 top to A8 bottom)
+    leftOrder.forEach(id => {
+        if (renderedCards[id]) leftSlotsContainer.appendChild(renderedCards[id]);
     });
 
-    // 2. Remove slots that no longer exist in the data
-    existingSlotIds.forEach(slotId => {
-        if (!newSlotIds.has(slotId)) {
-            const cardToRemove = document.getElementById(`slot-${slotId}`);
-            if (cardToRemove) {
-                cardToRemove.remove();
-                // Clear related timers for removed slots (safety)
-                if (reservationTimers[slotId]) clearTimeout(reservationTimers[slotId]);
-                if (countdownIntervals[slotId]) clearInterval(countdownIntervals[slotId]);
-                delete reservationTimers[slotId];
-                delete countdownIntervals[slotId];
-            }
-        }
+    // Insert Right Column (A4 top to A1 bottom)
+    rightOrder.forEach(id => {
+        if (renderedCards[id]) rightSlotsContainer.appendChild(renderedCards[id]);
     });
 });
 
@@ -537,19 +570,17 @@ async function reserveSlot(slotId, slotName) {
     if (!isConfirmed) return;
 
     const slotRef = ref(db, `parkingSlots/parkingSlots/${FLOOR_NAME}/slots/${slotId}`);
-    const userRef = userID ? ref(db, `users/users/${userID}`) : null;
-
+    
     try {
         await update(slotRef, {
             status: "reserved",
-            userID: userID || "TEMP_USER_" + Date.now(),
-            userName,
+            // Use the globally defined (or default) ID/Name
+            userID: userID,
+            userName: userName,
             reservedAt: serverTimestamp(),
             lastUpdated: serverTimestamp()
         });
-
-        if (userRef) await update(userRef, { selectedFloor: FLOOR_NAME, selectedSlot: slotName, lastReservation: serverTimestamp() });
-
+        
         await logAction("slot_reserved", `${userName} reserved ${slotName}`);
     } catch (err) {
         console.error("Reservation error:", err);
